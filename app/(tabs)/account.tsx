@@ -1,21 +1,27 @@
-import { View, Text, Button } from 'react-native'
-import React from 'react'
-import { useAuth } from '@clerk/clerk-expo';
-import { Link } from 'expo-router';
+import { View, Text, Button } from "react-native";
+import React from "react";
+import { useAuth } from "@clerk/clerk-expo";
+import { Link, Stack } from "expo-router";
+import Header from "@/components/header";
 
-const account = () => {
-
-  const {signOut, isSignedIn} = useAuth();
+const Account = () => {
+  const { signOut, isSignedIn } = useAuth();
   return (
     <View>
-      <Button title = "Log out" onPress={() => signOut()}/>
+      <Stack.Screen
+        options={{
+          header: () => <Header />,
+        }}
+      />
+
+      <Button title="Log out" onPress={() => signOut()} />
       {!isSignedIn && (
-        <Link href = {'/(modals)/login'}>
+        <Link href={"/(modals)/Login"}>
           <Text>Loign</Text>
         </Link>
       )}
     </View>
-  )
-}
+  );
+};
 
-export default account
+export default Account;

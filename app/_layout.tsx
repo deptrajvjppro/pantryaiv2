@@ -86,17 +86,18 @@ function RootLayoutNav() {
     //Clerk is ready but the user is not yet authenticated
     if (isLoaded && !isSignedIn) {
       //push the login page
-      router.push('/(modals)/login');
+      router.push('/(modals)/Login');
     }
   }, [isLoaded])
 
   return (
       <Stack>
+    
         <Stack.Screen name="(tabs)" options={{ 
           headerShown: false ,
           }} />
         <Stack.Screen 
-        name="(modals)/login" 
+        name="(modals)/Login" 
         options={{ 
           title: 'Log in or Sign up',
           presentation: 'modal',
@@ -111,9 +112,9 @@ function RootLayoutNav() {
         }} 
         />
         <Stack.Screen
-        name = "listing/[id]"
-        options={{
-          headerTitle: ''
+          name = "listing/[id]"
+          options={{
+            headerTitle: ''
         }}
         />
       </Stack>

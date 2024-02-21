@@ -1,6 +1,6 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native'
+import { View} from 'react-native'
 import React from 'react'
-import { Tabs, router } from 'expo-router';
+import { Tabs} from 'expo-router';
 import Colors from '@/constants/Colors';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { MaterialIcons, Entypo  } from '@expo/vector-icons';
@@ -16,56 +16,61 @@ const Layout = () => {
             tabBarActiveTintColor: Colors.primary,
             tabBarLabelStyle: {
                 fontFamily: 'mon-sb',
+                fontSize: 9,
+                paddingBottom: 5
             },
             
         }}>
+            
             <Tabs.Screen 
                 name = 'index' 
                 options = {{
                     tabBarLabel: 'Pantry',
                     tabBarIcon: ({ color, size}) =>
-                    <MaterialIcons name="home" size={size + 10} color= {color} />
+                    <MaterialIcons name="home" size={30} color= {color} />
                 }}
             />
-
+            
             <Tabs.Screen 
-                name = 'noti'
+                name = 'Notifications'
                 
                 options = {{
                     tabBarLabel: 'Notifications',
                     tabBarIcon: ({ color, size}) =>
-                    <Entypo name="bell" size={size} color= {color} />,
+                    <Entypo name="bell" size={20} color= {color} />,
                     
                 }}
             />
 
             <Tabs.Screen 
-                name = 'mealplanning' 
+                name = 'MealPlanning' 
                 options = {{
                     tabBarLabel: 'Meal Planning',
                     tabBarIcon: ({ color, size}) =>
-                    <MaterialIcons name="set-meal" size={size} color= {color} />
+                    <MaterialIcons name="set-meal" size={20} color= {color} />
                 }}
             />      
             
-            
+          
+
             <Tabs.Screen 
-                name = 'shoppingnote' 
+                name = 'ShoppingNote' 
                 options = {{
                     tabBarLabel: 'Shopping Note',
                     tabBarIcon: ({ color, size}) =>
-                    <Entypo name="open-book" size={size} color= {color}/>
+                    <Entypo name="open-book" size={20} color= {color}/>
+
                 }}
             />   
 
             
             
             <Tabs.Screen 
-            name = 'account' 
+            name = 'Account' 
             options = {{
                 tabBarLabel: 'Account',
                 tabBarIcon: ({ color, size}) =>
-                <Ionicons name ='person' size={size} color= {color}/>
+                <Ionicons name ='person' size={20} color= {color}/>
             }}
         />    
         
