@@ -12,7 +12,7 @@ const Notifications = () => {
         }}
       />
       <View style={styles.notiView}>
-        
+        <Text style = {styles.header}> Notifications </Text>
       </View>
     </View>
   );
@@ -27,8 +27,14 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     flex: 1,
-    top: 50, //default height for the header
+   
   },
+  header:{
+    fontFamily: "mon-b",
+    color: "#FFF",
+    fontSize: 25,
+    margin: 20
+  }
 });
 
 export default Notifications;

@@ -6,8 +6,6 @@ import {
   View,
   FlatList,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import AddPantryDetail from "./addpantry";
 import Colors from "@/constants/Colors";
@@ -121,7 +119,7 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     paddingHorizontal: 10,
-    fontFamily: 'mon-sb'
+    fontFamily: 'mon-b'
     
   },
   modalView: {

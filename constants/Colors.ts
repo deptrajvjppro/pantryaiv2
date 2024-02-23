@@ -6,5 +6,6 @@ export default {
   active:'#3b3668',
   inactive:'#716287',
   background:'#8a7e9d',
-  secondary:"#ffffff"
+  secondary:"#ffffff",
+
 };

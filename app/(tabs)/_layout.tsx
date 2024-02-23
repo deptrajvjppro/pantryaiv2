@@ -16,7 +16,7 @@ const Layout = () => {
             tabBarActiveTintColor: Colors.primary,
             tabBarInactiveTintColor: Colors.secondary,
             tabBarLabelStyle: {
-                fontFamily: 'mon-sb',
+                fontFamily: 'mon-b',
                 fontSize: 9,
                 paddingBottom: 5,
                 

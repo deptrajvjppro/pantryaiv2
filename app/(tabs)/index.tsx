@@ -45,7 +45,7 @@ const index = () => {
               activeIndex === index ? styles.activeTab : styles.inactiveTab,
             ]}
           >
-            <Text style={{ fontFamily: "mon-sb", color:'white' }}>{item.name}</Text>
+            <Text style={{ fontFamily: "mon-b", color:'white' }}>{item.name}</Text>
           </TouchableOpacity>
         ))}
       </View>
