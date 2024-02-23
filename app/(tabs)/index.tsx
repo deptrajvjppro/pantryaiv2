@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import Allitems from "@/components/allitems";
 import Allpantries from "@/components/allpantries";
 import SearchBar from "@/components/searchbar";
+import Colors from "@/constants/Colors";
 
 const tab = [
   {
@@ -44,7 +45,7 @@ const index = () => {
               activeIndex === index ? styles.activeTab : styles.inactiveTab,
             ]}
           >
-            <Text style={{ fontFamily: "mon-sb" }}>{item.name}</Text>
+            <Text style={{ fontFamily: "mon-sb", color:'white' }}>{item.name}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -69,10 +70,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   activeTab: {
-    backgroundColor: "#DDD",
+    backgroundColor: Colors.active,
+    
   },
   inactiveTab: {
-    backgroundColor: "#FFF",
+    backgroundColor: Colors.inactive,
   },
   contentContainer: {
     marginTop: 20,
@@ -81,7 +83,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: "#FFFF",
+    backgroundColor: Colors.background,
   },
   pantry: {
     backgroundColor: "black",

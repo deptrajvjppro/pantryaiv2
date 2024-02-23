@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import AddPantryDetail from "./addpantry";
 import Colors from "@/constants/Colors";
-
+import { AntDesign } from '@expo/vector-icons';
 const initialData = [
   {
     id: "",
@@ -44,6 +44,7 @@ const AllPantries = () => {
       id: Math.random().toString(), // Generate a random ID for the new pantry
       title,
     };
+    console.log("Handling this:", title);
     setData((currentData) => [...currentData, newItem]); // Add the new pantry to the
     // pantry list
   };
@@ -71,11 +72,10 @@ const AllPantries = () => {
       >
         <View
           style={styles.modalView}
-          
         >
-          <AddPantryDetail onAdd={handleAddPantry} />
-          <TouchableOpacity onPress={toggleModal} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Close</Text>
+          <AddPantryDetail onAdd={ handleAddPantry} />
+          <TouchableOpacity onPress={() => toggleModal()} style={styles.closeButton}>
+            <AntDesign name="close" size={30} color="black" />
           </TouchableOpacity>
         </View>
 
@@ -90,7 +90,9 @@ export default AllPantries;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "black",
+    width: "100%",
+    marginTop: 10
   },
   flatListView:{
     flex: 1
@@ -118,11 +120,18 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: "#ffffff",
     fontSize: 16,
-    paddingHorizontal: 20
+    paddingHorizontal: 10,
+    fontFamily: 'mon-sb'
+    
   },
   modalView: {
     margin: 20,
-    backgroundColor: "white",
+    width: 350,
+    height: 350,
+    alignSelf: "center",
+    justifyContent:'center',
+    backgroundColor: 'white',
+
     borderRadius: 20,
     padding: 35,
     alignItems: "center",
@@ -133,18 +142,18 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
+    top: 90, 
+    gap: 50,
+
   },
   closeButton: {
-    backgroundColor: "#dc3545",
+    backgroundColor: "#FFF",
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 50,
     marginTop: 10,
+    borderWidth: 1,
   },
-  closeButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-  },
+  
   item: {
     backgroundColor: Colors.box,
     width: 350,
@@ -152,7 +161,7 @@ const styles = StyleSheet.create({
     borderRadius:10,
     padding: 10,
     borderWidth:1,
-
+    alignSelf: "center",
   },
   title: {
     fontSize: 32,

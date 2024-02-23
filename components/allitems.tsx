@@ -22,7 +22,8 @@ const styles = StyleSheet.create({
   container:{
     flex: 1,
     backgroundColor: 'black',
-    width:'100%'
+    width:'100%',
+    margin:10
   },
   scrollView: {
     flex: 1

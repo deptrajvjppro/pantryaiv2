@@ -14,11 +14,17 @@ const Layout = () => {
         <Tabs screenOptions={{
             
             tabBarActiveTintColor: Colors.primary,
+            tabBarInactiveTintColor: Colors.secondary,
             tabBarLabelStyle: {
                 fontFamily: 'mon-sb',
                 fontSize: 9,
-                paddingBottom: 5
+                paddingBottom: 5,
+                
             },
+            tabBarStyle: {
+                backgroundColor: Colors.background
+            }
+           
             
         }}>
             

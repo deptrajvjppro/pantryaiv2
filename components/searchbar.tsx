@@ -12,11 +12,11 @@ const SearchBar = () => {
     }
   return (
     <View style={styles.actionRow}>
-      <Ionicons name="search" size={20} color="black" />
+      <Ionicons name="search" size={20} color="white" />
 
       <TextInput
         style={{
-          fontFamily: "mon",
+          fontFamily: "mon-sb",
           fontSize: 15,
           justifyContent: "center",
           flex: 1,
@@ -24,7 +24,7 @@ const SearchBar = () => {
         value={searchInput}
         onChangeText={(query) => searchHandle(query)}
         placeholder="Search for pantries or items ..."
-        placeholderTextColor="black"
+        placeholderTextColor="white"
       />
 
       {/* <TouchableOpacity style = {styles.sortingButton}>
@@ -42,9 +42,10 @@ const styles = StyleSheet.create({
     padding: 15,
     width: 350,
     height: 50,
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderRadius: 30,
     gap: 20,
-    marginTop: 70,
+    marginTop: 20,
+    borderColor: "white",
   },
 });
