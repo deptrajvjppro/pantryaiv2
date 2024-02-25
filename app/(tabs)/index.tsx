@@ -26,13 +26,12 @@ const index = () => {
 
   return (
     <View style={styles.container}>
-    
       <Stack.Screen
         options={{
           header: () => <Header />,
         }}
       />
-    
+
       <SearchBar />
 
       <View style={styles.tabContainer}>
@@ -40,12 +39,11 @@ const index = () => {
           <TouchableOpacity
             onPress={() => selectTab(index)}
             key={index}
-            style={[
-              styles.tab,
-              activeIndex === index ? styles.activeTab : styles.inactiveTab,
-            ]}
+            style={ styles.tab}
           >
-            <Text style={{ fontFamily: "mon-b", color:'white' }}>{item.name}</Text>
+            <Text style={[styles.text,activeIndex === index ? styles.textActive: styles.textInActive]}>
+            {item.name}</Text>
+            <View style ={[styles.rectangle,activeIndex === index ? styles.rectangleActive: styles.rectangleInActive]}></View>
           </TouchableOpacity>
         ))}
       </View>
@@ -60,22 +58,31 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 20,
+    alignItems:'center',
+  
+  },
+  text:{
+    fontFamily: "mon-b", 
+    textAlign:'center',
+    
+    marginTop:5
+  },
+  textInActive: { 
+    color: Colors.lessgrey,
+  },
+  textActive: { 
+    color: "white",
+
   },
   tab: {
-    paddingVertical: 10,
     paddingHorizontal: 20,
     marginHorizontal: 10,
-    borderRadius: 5,
+    borderRadius: 20,
     width: 150,
+    backgroundColor: "black",
     alignItems: "center",
   },
-  activeTab: {
-    backgroundColor: Colors.active,
-    
-  },
-  inactiveTab: {
-    backgroundColor: Colors.inactive,
-  },
+
   contentContainer: {
     marginTop: 20,
     padding: 15,
@@ -90,6 +97,20 @@ const styles = StyleSheet.create({
     height: 300,
     alignItems: "center",
   },
+  rectangle:{
+    borderWidth: 2,
+    height:1,
+    width: 70,
+    marginTop: 15,
+    borderRadius: 10,
+    
+  },
+  rectangleActive:{
+    borderColor: Colors.primary
+  },
+  rectangleInActive:{
+    borderColor: "black"
+  }
 });
 
 export default index;

@@ -2,6 +2,7 @@ import { StyleSheet, TextInput, View } from "react-native";
 import React, { useState } from "react";
 
 import { Ionicons } from "@expo/vector-icons";
+import Colors from "@/constants/Colors";
 
 const SearchBar = () => {
     const [searchInput, setSearchInput] = useState('');
@@ -12,11 +13,11 @@ const SearchBar = () => {
     }
   return (
     <View style={styles.actionRow}>
-      <Ionicons name="search" size={20} color="white" />
+      <Ionicons name="search" size={20} color= {Colors.lessgrey} />
 
       <TextInput
         style={{
-          fontFamily: "mon-sb",
+          fontFamily: "mon",
           fontSize: 15,
           justifyContent: "center",
           flex: 1,
@@ -24,7 +25,7 @@ const SearchBar = () => {
         value={searchInput}
         onChangeText={(query) => searchHandle(query)}
         placeholder="Search for pantries or items ..."
-        placeholderTextColor="white"
+        placeholderTextColor= {Colors.lessgrey}
       />
 
       {/* <TouchableOpacity style = {styles.sortingButton}>
@@ -39,13 +40,15 @@ export default SearchBar;
 const styles = StyleSheet.create({
   actionRow: {
     flexDirection: "row",
-    padding: 15,
+    paddingHorizontal: 20,
     width: 350,
     height: 50,
-    borderWidth: 1,
+    alignSelf:'center',
+    alignItems:'center',
     borderRadius: 30,
     gap: 20,
     marginTop: 20,
-    borderColor: "white",
+ 
+    backgroundColor: Colors.grey,
   },
 });

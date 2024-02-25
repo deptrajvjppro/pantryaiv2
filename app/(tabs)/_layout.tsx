@@ -13,8 +13,8 @@ const Layout = () => {
         
         <Tabs screenOptions={{
             
-            tabBarActiveTintColor: Colors.primary,
-            tabBarInactiveTintColor: Colors.secondary,
+            tabBarActiveTintColor: "white",
+            tabBarInactiveTintColor: Colors.lessgrey,
             tabBarLabelStyle: {
                 fontFamily: 'mon-b',
                 fontSize: 9,
@@ -23,9 +23,8 @@ const Layout = () => {
             },
             tabBarStyle: {
                 backgroundColor: Colors.background
-            }
+            },
            
-            
         }}>
             
             <Tabs.Screen 

@@ -1,11 +1,12 @@
 export default {
-  primary : '#1a1835',
+  primary : '#008df9',
   box:'#e4fbff',
-  grey: '#5E5D5E',
+  grey: '#363636',
   dark:'#1A1A1A',
-  active:'#3b3668',
-  inactive:'#716287',
-  background:'#8a7e9d',
+  active:'#008df9',
+  inactive:'#505050',
+  background:'#000000',
   secondary:"#ffffff",
-
+  shadowColor:"#373737",
+  lessgrey: "#7d7d7d"
 };

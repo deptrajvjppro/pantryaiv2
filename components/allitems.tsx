@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-import { Camera, CameraType } from 'expo-camera';
+import React from 'react'
+import Colors from '@/constants/Colors'
+
+
+
+
 
 const Allitems = () => {
-
- 
-
 
 
 
@@ -18,10 +19,12 @@ const Allitems = () => {
   )
 }
 
+
+
 const styles = StyleSheet.create({
   container:{
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: Colors.background,
     width:'100%',
     margin:10
   },

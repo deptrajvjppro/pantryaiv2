@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   StyleSheet,
@@ -6,10 +6,14 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+ 
 } from "react-native";
 import AddPantryDetail from "./addpantry";
 import Colors from "@/constants/Colors";
 import { AntDesign } from '@expo/vector-icons';
+import {FIRESTORE_DATABASE} from '@/firebaseConfig'
+import { addDoc, collection } from "firebase/firestore";
+
 const initialData = [
   {
     id: "",
@@ -33,6 +37,13 @@ const AllPantries = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState(initialData); // Use state to manage pantry data
 
+  useEffect(() => {},[]);
+
+  const addPantry = async () =>{
+    const doc = addDoc(collection(FIRESTORE_DATABASE, ' pantry'),{title:'Test'})
+    console.log(doc);
+  }
+
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
@@ -47,10 +58,11 @@ const AllPantries = () => {
     // pantry list
   };
 
+  
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>List of all pantries</Text>
-
+      <TouchableOpacity onPress = {() => addPantry()} style={styles.addButton}><Text>1</Text></TouchableOpacity>
       <FlatList
         data={data}
         renderItem={({ item }) => <Item title={item.title} />}
@@ -88,29 +100,31 @@ export default AllPantries;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor:  Colors.background,
     width: "100%",
-    marginTop: 10
+    marginTop: 30,
+    borderRadius: 10,
+    shadowColor: Colors.shadowColor,
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
   },
   flatListView:{
     flex: 1
   },
   headerText: {
-    color: "black",
+    color: "white",
     textAlign: "center",
     padding: 10,
   },
   addButton: {
     backgroundColor: Colors.primary,
     padding: 10,
-    borderRadius: 5,
+    paddingHorizontal: 20,
+    borderRadius: 20,
     marginBottom:20,
     alignSelf: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowColor: Colors.shadowColor,
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
