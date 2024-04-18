@@ -24,3 +24,5 @@ tqdm==4.66.2
 typing_extensions==4.10.0
 urllib3==2.2.1
 Werkzeug==3.0.1
+Flask-SQLAlchemy==2.5.1
+watchdog==2.1.6

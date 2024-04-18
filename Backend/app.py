@@ -4,62 +4,69 @@ import logging
 import openai
 import os
 from dotenv import load_dotenv
+# Import db instance and models from models.py
+from models import db, User, PantryItem, Recipe, Favorite  # Import other models as needed
 
 load_dotenv()
-openai.api_key = os.environ["OPENAI_API_KEY"]
-app_secret_key = os.environ["APP_SECRET_KEY"]
 
-#Set up Flask app
-app = Flask(__name__)
-CORS(app)
-app.secret_key= app_secret_key
+def create_app():
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pantryai.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.secret_key = os.environ["APP_SECRET_KEY"]
+    openai.api_key = os.environ["OPENAI_API_KEY"]
 
-#Define the home page route
-@app.route("/")
-def home():
-  session.pop('chat_history', None) # Clear chat history at the start of a new session
-  return render_template("index.html")
+    db.init_app(app)
 
-logging.basicConfig(level=logging.DEBUG)
-#Define the Chatbot route
-@app.route("/chatbot", methods=["POST"])
-def chatbot():
-  app.logger.debug("received chatbot request")
-  data = request.get_json()
-  #Get the message input from the user
-  user_input = data["message"]
-  
-  # Initialize chat history if not already present
-  if 'chat_history' not in session:
-    session['chat_history'] = []
-  
-  #use theopenAI API to generate a response 
-  # prompt = f"User: {user_input}\nChatbot: "
-  
-  try:
-    response = openai.ChatCompletion.create(
-      model="gpt-3.5-turbo",
-      messages=[{"role": "user", "content": user_input}]
-    )
-    
-    #Extract the response text form the OpenAI API result
-    bot_response = response['choices'][0]['message']['content']
-    # bot_response = response.choices[0].text.strip()
-  except Exception as e:
-    bot_response = f"An error occurred: {str(e)}"
-    
-  # Append the user input and bot response to the chat history
-  session['chat_history'].append({"user": user_input, "bot": bot_response})
-  session.modified = True  # Ensure the session is marked as modified
-  
-  #Render the Chatbot template with the response text
-  # return render_template(
-  #   "chatbot.html", 
-  #   chat_history=session['chat_history'],
-  #   user_input=user_input, 
-  #   bot_response=bot_response
-  #   )
-  return jsonify({"bot_response": bot_response})
-  
-if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=5000, debug=True)
+    with app.app_context():
+        db.create_all()  # This creates the database tables
+
+    CORS(app)
+    logging.basicConfig(level=logging.DEBUG)
+
+
+    @app.route("/")
+    def home():
+        # Clears the chat history at the start of a new session.
+        session.pop('chat_history', None)
+        # Render the home page template.
+        return render_template("index.html")
+
+
+    @app.route("/chatbot", methods=["POST"])
+    def chatbot():
+        # Logs the receipt of a chatbot request.
+        app.logger.debug("Received chatbot request")
+        # Gets the JSON data sent with the POST request.
+        data = request.get_json()
+        # Retrieves the message from the user from the JSON data.
+        user_input = data["message"]
+
+        # Initializes chat history if it doesn't exist in the session.
+        if 'chat_history' not in session:
+            session['chat_history'] = []
+
+        try:
+            # Calls OpenAI's Chat Completion and generates a response.
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": user_input}]
+            )
+            # Extracts the bot response from the OpenAI API result.
+            bot_response = response['choices'][0]['message']['content']
+        except Exception as e:
+            # Handles any errors that occur during the OpenAI API call.
+            bot_response = f"An error occurred: {str(e)}"
+
+        # Appends the user input and bot response to the chat history in the session.
+        session['chat_history'].append({"user": user_input, "bot": bot_response})
+        session.modified = True  # Marks the session as modified to ensure it's saved.
+        # Returns the bot response in JSON format.
+        return jsonify({"bot_response": bot_response})
+
+    return app
+
+if __name__ == '__main__':
+    # Runs the Flask application on the development server.
+    app = create_app()
+    app.run(host='0.0.0.0', port=5000, debug=True)
