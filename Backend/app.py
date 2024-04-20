@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 # Import db instance and models from models.py
 from models import db, User, PantryItem, Recipe, Favorite  # Import other models as needed
+from routes import backend
 
 load_dotenv()
 
@@ -15,11 +16,9 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.secret_key = os.environ["APP_SECRET_KEY"]
     openai.api_key = os.environ["OPENAI_API_KEY"]
+    app.register_blueprint(backend)
 
     db.init_app(app)
-
-    with app.app_context():
-        db.create_all()  # This creates the database tables
 
     CORS(app)
     logging.basicConfig(level=logging.DEBUG)
@@ -65,8 +64,3 @@ def create_app():
         return jsonify({"bot_response": bot_response})
 
     return app
-
-if __name__ == '__main__':
-    # Runs the Flask application on the development server.
-    app = create_app()
-    app.run(host='0.0.0.0', port=5000, debug=True)

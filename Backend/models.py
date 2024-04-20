@@ -2,7 +2,6 @@
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 
-
 db = SQLAlchemy()
 
 class User(db.Model):
@@ -18,6 +17,7 @@ class PantryItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     expiry_date = db.Column(db.DateTime, default=datetime)
+    quantity = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Ensure this points to 'user.id'
 
 
