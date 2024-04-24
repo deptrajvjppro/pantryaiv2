@@ -9,7 +9,6 @@ import Colors from '@/constants/Colors'
 const Allitems = () => {
 
 
-
   return (
     <View style = {styles.container}>
       <Text>List of all items</Text>

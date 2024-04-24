@@ -52,3 +52,10 @@ def delete_recipe_by_name():
     else:
         return jsonify({'message': 'No recipe found with that name to delete'}), 404
 
+@backend.route('/add_user', methods=['POST'])
+def add_user():
+    data = request.get_json()
+    new_user = User(username=data['username'], email=data['email'], password=data['password'])
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User added successfully'}), 201

@@ -6,12 +6,11 @@ import {
   View,
   FlatList,
   TouchableOpacity,
- 
 } from "react-native";
 import AddPantryDetail from "./addpantry";
 import Colors from "@/constants/Colors";
-import { AntDesign } from '@expo/vector-icons';
-import {FIRESTORE_DATABASE} from '@/firebaseConfig'
+import { AntDesign } from "@expo/vector-icons";
+import { FIRESTORE_DATABASE } from "@/firebaseConfig";
 import { addDoc, collection } from "firebase/firestore";
 
 const initialData = [
@@ -23,7 +22,7 @@ const initialData = [
 
 type ItemProps = { title: string };
 
-const Item = ({ title } : ItemProps) => {
+const Item = ({ title }: ItemProps) => {
   if (!title) return null; // Don't render if title is undefined or null
 
   return (
@@ -37,12 +36,14 @@ const AllPantries = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [data, setData] = useState(initialData); // Use state to manage pantry data
 
-  useEffect(() => {},[]);
+  useEffect(() => {}, []);
 
-  const addPantry = async () =>{
-    const doc = addDoc(collection(FIRESTORE_DATABASE, ' pantry'),{title:'Test'})
+  const addPantry = async () => {
+    const doc = addDoc(collection(FIRESTORE_DATABASE, " pantry"), {
+      title: "Test",
+    });
     console.log(doc);
-  }
+  };
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
@@ -58,16 +59,17 @@ const AllPantries = () => {
     // pantry list
   };
 
-  
   return (
     <View style={styles.container}>
       <Text style={styles.headerText}>List of all pantries</Text>
-      <TouchableOpacity onPress = {() => addPantry()} style={styles.addButton}><Text>1</Text></TouchableOpacity>
+      <TouchableOpacity onPress={() => addPantry()} style={styles.addButton}>
+        <Text>1</Text>
+      </TouchableOpacity>
       <FlatList
         data={data}
         renderItem={({ item }) => <Item title={item.title} />}
         keyExtractor={(item) => item.id}
-        style = {styles.flatListView}
+        style={styles.flatListView}
       />
 
       <TouchableOpacity onPress={toggleModal} style={styles.addButton}>
@@ -80,15 +82,15 @@ const AllPantries = () => {
         visible={modalVisible}
         onRequestClose={toggleModal}
       >
-        <View
-          style={styles.modalView}
-        >
-          <AddPantryDetail onAdd={ handleAddPantry} />
-          <TouchableOpacity onPress={() => toggleModal()} style={styles.closeButton}>
+        <View style={styles.modalView}>
+          <AddPantryDetail onAdd={handleAddPantry} />
+          <TouchableOpacity
+            onPress={() => toggleModal()}
+            style={styles.closeButton}
+          >
             <AntDesign name="close" size={30} color="black" />
           </TouchableOpacity>
         </View>
-
       </Modal>
     </View>
   );
@@ -96,11 +98,10 @@ const AllPantries = () => {
 
 export default AllPantries;
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:  Colors.background,
+    backgroundColor: Colors.background,
     width: "100%",
     marginTop: 30,
     borderRadius: 10,
@@ -109,8 +110,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  flatListView:{
-    flex: 1
+  flatListView: {
+    flex: 1,
   },
   headerText: {
     color: "white",
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
-    marginBottom:20,
+    marginBottom: 20,
     alignSelf: "center",
     shadowColor: Colors.shadowColor,
     shadowOpacity: 0.25,
@@ -133,16 +134,15 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     paddingHorizontal: 10,
-    fontFamily: 'mon-b'
-    
+    fontFamily: "mon-b",
   },
   modalView: {
     margin: 20,
     width: 350,
     height: 350,
     alignSelf: "center",
-    justifyContent:'center',
-    backgroundColor: 'white',
+    justifyContent: "center",
+    backgroundColor: "white",
 
     borderRadius: 20,
     padding: 35,
@@ -154,9 +154,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    top: 90, 
+    top: 90,
     gap: 50,
-
   },
   closeButton: {
     backgroundColor: "#FFF",
@@ -165,14 +164,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderWidth: 1,
   },
-  
+
   item: {
     backgroundColor: Colors.box,
     width: 350,
     height: 100,
-    borderRadius:10,
+    borderRadius: 10,
     padding: 10,
-    borderWidth:1,
+    borderWidth: 1,
     alignSelf: "center",
   },
   title: {
