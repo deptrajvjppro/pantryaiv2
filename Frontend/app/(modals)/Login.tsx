@@ -1,154 +1,106 @@
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { useWarmupBrowser } from '@/hooks/useWarmUpBrowser';
-import {defaultStyle} from '@/constants/Styles'
-import Colors from '@/constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
-import { useOAuth } from '@clerk/clerk-expo';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 
-enum Strategy {
-  Google = 'oauth_google',
-}
+import Colors from '@/constants/Colors';
+import { defaultStyle } from '@/constants/Styles';
+
 const Login = () => {
-  //dont mind this
-  useWarmupBrowser();
-  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
 
-  // Authentication sign in with Google block
-  /////////////////////////////////
-  const {startOAuthFlow :googleAuthentication} =useOAuth({strategy: 'oauth_google'});
-  const onClick = async (strategy : Strategy) => {
+  const handleLogin = async () => {
+    const response = await fetch('http://127.0.0.1:5000/backend/loginUser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-    const selectAuth = {
-      [Strategy.Google] : googleAuthentication,
-    }[strategy];
-
-    try {
-      const {createdSessionId, setActive} = await selectAuth();
-
-      if(createdSessionId){
-        setActive!({session: createdSessionId})
-        router.back()
-      }
+    const data = await response.json();
+    if (data.id) {
+      console.log('Login successful, user ID:', data.id);
+      // Redirect or perform further actions
+    } else {
+      Alert.alert('Login failed', 'No user found with that email and password combination');
     }
-    catch (err) {
-      console.error('O-Authentication error: ' + err);
-    }
-  }
-  /////////////////////////////////
+  };
 
   return (
-    
-    <View style = {styles.container}>
-      {/* LOGO */}
-      <Image source = {require('@/assets/images/logo.png')}
-        style = {styles.logoStyle}/>
+      <View style={styles.container}>
+        <Image source={require('@/assets/images/logo.png')} style={styles.logoStyle} />
 
+        <Text style={styles.inputLabel}>Enter Email Address</Text>
+        <TextInput
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize='none'
+            placeholderTextColor='black'
+            style={[defaultStyle.inputBox, { marginTop: 20 }]}
+        />
 
-        <Text style ={{
-          left: 30,
-          top: -200,
-          fontSize: 15
-        }}> Enter Email Address</Text>
-        <TextInput 
-        autoCapitalize='none' 
-        placeholderTextColor='black'
-        style = {[defaultStyle.inputBox,{ top: -190,}]}/>
-        
-        <Text style ={{
-          left: 30,
-          top: -180,
-          fontSize: 15
-        }}> Enter Password</Text>
-        <TextInput 
-        autoCapitalize='none' 
-        placeholderTextColor='black'
-        style = {[defaultStyle.inputBox,{ top: -170,}]}
-        secureTextEntry/>
-        
-        <TouchableOpacity style = {[defaultStyle.loginButton,{ top: -150,}]}>
-          <Text style = {styles.textBox}> 
-            Log in
-            </Text>
+        <Text style={styles.inputLabel}>Enter Password</Text>
+        <TextInput
+            value={password}
+            onChangeText={setPassword}
+            autoCapitalize='none'
+            placeholderTextColor='black'
+            secureTextEntry
+            style={[defaultStyle.inputBox, { marginTop: 20 }]}
+        />
+
+        <TouchableOpacity style={defaultStyle.loginButton} onPress={handleLogin}>
+          <Text style={styles.textBox}>Log in</Text>
         </TouchableOpacity>
+      </View>
+  );
+};
 
-        <View style ={styles.separatorView}>
-          <View style = {{
-            flex:1,
-            borderBottomWidth:StyleSheet.hairlineWidth,
-            top: -135
-          }}>
-            <Text style = {styles.separator}>or</Text>
-          </View>
-        </View>
-
-        <View>
-          <TouchableOpacity onPress={() => onClick(Strategy.Google)} style = {[styles.continueButton, {top:-105}]}>
-            <Ionicons name = 'logo-google' size ={24} style = {styles.btnIcon}/>
-            <Text style = {styles.textStyle}>Continue with Google</Text>
-          </TouchableOpacity>
-        </View>
-
-    </View>
-  )
-}
 const styles = StyleSheet.create({
-  container:{
+  container: {
     flex: 1,
     backgroundColor: 'white',
-   
   },
-  textStyle:{
-   
+  inputLabel: {
+    left: 30,
+    fontSize: 15,
+    marginTop: 20,
+  },
+  textStyle: {
     fontFamily: 'mon-sb',
     left: 70,
     fontSize: 20
-
   },
-  btnIcon:{
+  btnIcon: {
     position: 'absolute',
     padding: 10,
-    left:15
+    left: 15
   },
   logoStyle: {
-    top: -110,
-    left: 20,
-    height: 350,
-    width: 350,
-  },
-  separator:{
-    fontFamily: 'mon',
-    color: 'black',
-    fontSize: 15,
-    textAlign:'center'
-    
+    alignSelf: 'center',
+    height: 100,
+    width: 100,
+    marginTop: 50,
   },
   textBox: {
-    fontFamily:'mon-sb',
-    textAlign:'center',
-    color:'white',
-    fontSize:20
+    fontFamily: 'mon-sb',
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 20
   },
-  separatorView:{
-    flexDirection: 'row',
-    gap:10,
-    alignItems: 'center',
-    
-  },
-  continueButton:{
-  
-      height: 55,
-      width: 350,
-      left :20,
-      borderWidth: 1.1,
-      backgroundColor: 'white',
-      borderColor: 'black',
-      justifyContent: 'center',
-      borderRadius: 7,
-     
-    
+  continueButton: {
+    height: 55,
+    width: 350,
+    borderWidth: 1.1,
+    backgroundColor: 'white',
+    borderColor: 'black',
+    justifyContent: 'center',
+    borderRadius: 7,
+    marginTop: 20,
+    alignSelf: 'center',
   }
-})
-export default Login
+});
+
+export default Login;
