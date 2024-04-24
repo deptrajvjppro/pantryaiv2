@@ -48,7 +48,10 @@ if __name__ == '__main__':
 
     # PANTRY ITEMS
     print("Adding a new pantry item:")
-    add_pantry_item('Green Beans', '2024-12-01', 2, 1)
+    add_pantry_item('Green Beans', '2024-12-01', 1, 2)
+
+    print("Searching for a pantry item by User ID:")
+    get_pantry_items_by_UID(1)
 
     print("Deleting a pantry item by ID:")
     delete_pantry_item(3)
