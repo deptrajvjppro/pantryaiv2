@@ -1,6 +1,7 @@
 from flask import jsonify, request, abort, Blueprint
-from models import User, PantryItem, Recipe, Favorite
+from models import db, User, PantryItem, Recipe, Favorite
 from flask import current_app as app
+from datetime import datetime
 
 backend = Blueprint('backend', __name__, url_prefix='/backend')
 
@@ -69,9 +70,15 @@ def add_user():
 @backend.route('/add_recipe', methods=['POST'])
 def add_recipe():
     data = request.get_json()
+<<<<<<< HEAD
     if not all(key in data for key in ['name', 'instructions', 'pantry_item_id']):
         return jsonify({'error': 'Missing data'}), 400
     new_recipe = Recipe(name=data['name'], instructions=data['instructions'], pantry_item_id=data['pantry_item_id'])
+=======
+    if not all(key in data for key in ['name', 'instructions', 'user_id']):
+        return jsonify({'error': 'Missing data'}), 400
+    new_recipe = Recipe(name=data['name'], instructions=data['instructions'], user_id=data['user_id'])
+>>>>>>> fe9b9bd56e04ecf83784ce444fedb75090cb28d7
     db.session.add(new_recipe)
     try:
         db.session.commit()
@@ -84,17 +91,34 @@ def add_recipe():
 @backend.route('/add_pantry_item', methods=['POST'])
 def add_pantry_item():
     data = request.get_json()
+<<<<<<< HEAD
     if not all(key in data for key in ['name', 'expiry_date', 'user_id']):
         return jsonify({'error': 'Missing data'}), 400
     new_item = PantryItem(name=data['name'], expiry_date=datetime.strptime(data['expiry_date'], '%Y-%m-%d'), user_id=data['user_id'])
     db.session.add(new_item)
     try:
+=======
+    if not all(key in data for key in ['name', 'expiry_date', 'user_id', 'quantity']):
+        return jsonify({'error': 'Missing data'}), 400
+    try:
+        new_item = PantryItem(
+            name=data['name'],
+            expiry_date=datetime.strptime(data['expiry_date'], '%Y-%m-%d'),
+            quantity=data['quantity'],
+            user_id=data['user_id']
+        )
+        db.session.add(new_item)
+>>>>>>> fe9b9bd56e04ecf83784ce444fedb75090cb28d7
         db.session.commit()
         return jsonify({'message': 'Pantry item added successfully', 'item_id': new_item.id}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> fe9b9bd56e04ecf83784ce444fedb75090cb28d7
 @backend.route('/delete_pantry_item', methods=['DELETE'])
 def delete_pantry_item():
     item_id = request.args.get('item_id')
@@ -129,6 +153,7 @@ def get_pantry_items_by_user():
     items_data = [{'id': item.id, 'name': item.name, 'expiry_date': item.expiry_date.strftime('%Y-%m-%d'), 'quantity': item.quantity} for item in pantry_items]
     return jsonify(items_data), 200
 
+<<<<<<< HEAD
 # @backend.route('/get_pantry_items_by_user', methods=['GET'])
 # def get_pantry_items_by_user():
 #     user_id = request.args.get('user_id')
@@ -146,3 +171,17 @@ def get_pantry_items_by_user():
 
 
 
+=======
+
+@backend.route('/loginUser', methods=['POST'])
+def login_user():
+    data = request.get_json()
+    if not all(key in data for key in ['email', 'password']):
+        return jsonify({'error': 'Email and password are required'}), 400
+
+    user = User.query.filter_by(email=data['email']).first()
+    if user and user.password == data['password']:
+        return jsonify({'user_id': user.id}), 200
+    else:
+        return jsonify({'error': 'Invalid credentials'}), 404
+>>>>>>> fe9b9bd56e04ecf83784ce444fedb75090cb28d7
