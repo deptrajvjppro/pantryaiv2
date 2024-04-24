@@ -136,3 +136,15 @@ def get_pantry_items_by_user():
     items_data = [{'id': item.id, 'name': item.name, 'expiry_date': item.expiry_date.strftime('%Y-%m-%d'), 'quantity': item.quantity} for item in pantry_items]
     return jsonify(items_data), 200
 
+
+@backend.route('/loginUser', methods=['POST'])
+def login_user():
+    data = request.get_json()
+    if not all(key in data for key in ['email', 'password']):
+        return jsonify({'error': 'Email and password are required'}), 400
+
+    user = User.query.filter_by(email=data['email']).first()
+    if user and user.password == data['password']:
+        return jsonify({'user_id': user.id}), 200
+    else:
+        return jsonify({'error': 'Invalid credentials'}), 404
