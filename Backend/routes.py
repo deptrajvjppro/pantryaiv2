@@ -127,6 +127,7 @@ def search_pantry_item_by_name():
     else:
         return jsonify({'message': 'No pantry items found with that name'}), 404
 
+# http://127.0.0.1:5000/backend/get_pantry_items_by_user
 @backend.route('/get_pantry_items_by_user', methods=['GET'])
 def get_pantry_items_by_user():
     user_id = request.args.get('user_id')

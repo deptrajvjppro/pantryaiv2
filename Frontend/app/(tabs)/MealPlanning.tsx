@@ -1,51 +1,65 @@
-import {View, Text, TextInput, Button, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, TouchableOpacity} from "react-native";
 import React, { useState, useEffect } from "react";
-import { Stack } from 'expo-router'
-import Header from '@/components/header'
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button } from "react-native";
 
 const MealPlanning = () => {
-  console.log("ChatScreen is rendering");
-  const [chatHistory, setChatHistory] = useState([
-    { user: "", bot: "Hello, how may I assist you?" },
-  ]);
+  const [chatHistory, setChatHistory] = useState([{ user: "", bot: "Hello, how may I assist you?" }]);
   const [userInput, setUserInput] = useState("");
   const [inputKey, setInputKey] = useState(Math.random().toString());
+  const [recipeSuggestion, setRecipeSuggestion] = useState("Generate recipe suggestion");
+
+  const fetchPantryItemAndGenerateRecipe = async (user_id = 1) => {
+    try {
+      const response = await fetch(`http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      try {
+        const pantryItems = await response.json();
+        if (pantryItems.length > 0) {
+          const item = pantryItems[0].name; // Assume we take the first item for simplicity
+          setRecipeSuggestion(`Generate a recipe suggestion for ${item}`);
+        } else {
+          setRecipeSuggestion("No pantry items found for user.");
+        }
+      } catch (e) {
+        console.error("Error parsing JSON!", e);
+        setRecipeSuggestion("Error parsing JSON!");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error.message);
+      setRecipeSuggestion(`Fetch error: ${error.message}`);
+    }
+  };
 
   const sendMessage = async () => {
     if (userInput.trim()) {
-
-      // Add user message to chat history
-      const updatedChatHistory = [...chatHistory, { user: userInput, bot: "..." },];
+      const updatedChatHistory = [...chatHistory, { user: userInput, bot: "..." }];
       setChatHistory(updatedChatHistory);
 
-      // Send the userInput to the Flask backend
       try {
-        const response = await fetch("http://127.0.0.1:5000/chatbot", {
+        const response = await fetch("http://192.168.1.15:5000/chatbot", {
           method: "POST",
-          headers: {"Content-Type": "application/json",},
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: userInput }),
         });
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Data received:", data);
-
-          // Update chat history with ChatGPT's response
           updatedChatHistory[updatedChatHistory.length - 1].bot = data.bot_response;
           setChatHistory(updatedChatHistory);
-
         } else {
           console.error("Fetch error:", response.statusText);
           updatedChatHistory[updatedChatHistory.length - 1].bot = "Error: Could not fetch response.";
+          setChatHistory(updatedChatHistory);
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error("Fetch error:", error.message);
         updatedChatHistory[updatedChatHistory.length - 1].bot = "Exception: Could not fetch response.";
+        setChatHistory(updatedChatHistory);
       }
-      // Update the chat history and clear the input field
-      setChatHistory(updatedChatHistory);
-      setUserInput(""); // Reset the input field
-      setInputKey(Math.random().toString()); // Update the key to force re-render
+
+      setUserInput("");
+      setInputKey(Math.random().toString());
     }
   };
 
@@ -73,8 +87,9 @@ const MealPlanning = () => {
               placeholderTextColor="gray"
           />
           <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
-            <Text style = {styles.sendButtonText}>Send</Text>
+            <Text style={styles.sendButtonText}>Send</Text>
           </TouchableOpacity>
+          <Button title={recipeSuggestion} onPress={fetchPantryItemAndGenerateRecipe} />
         </View>
       </KeyboardAvoidingView>
   );
@@ -84,44 +99,36 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: 'white', // Ensure background is not black
+    backgroundColor: 'white',
   },
-
   chatContainer: {
     flex: 1,
   },
-
   messageContainer: {
     marginBottom: 10,
   },
-
   userMessage: {
     fontWeight: 'bold',
   },
-
   botMessage: {
     fontStyle: 'italic',
   },
-
   input: {
     borderWidth: 1,
     marginBottom: 10,
     padding: 10,
-
   },
-
   sendButton: {
-    backgroundColor: '#007bff', // Example: Blue background
+    backgroundColor: '#007bff',
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 5,
   },
-
   sendButtonText: {
-    color: 'white', // Text color
+    color: 'white',
     fontSize: 16,
   },
 });
 
-export default MealPlanning
+export default MealPlanning;
