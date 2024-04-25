@@ -56,12 +56,6 @@ def delete_recipe_by_name():
 @backend.route('/add_user', methods=['POST'])
 def add_user():
     data = request.get_json()
-<<<<<<< HEAD
-    new_user = User(username=data['username'], email=data['email'], password=data['password'])
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'message': 'User added successfully'}), 201
-=======
     if not all(key in data for key in ['username', 'email', 'password']):
         return jsonify({'error': 'Missing data'}), 400
     new_user = User(username=data['username'], email=data['email'], password=data['password'])
@@ -154,4 +148,4 @@ def login_user():
         return jsonify({'user_id': user.id}), 200
     else:
         return jsonify({'error': 'Invalid credentials'}), 404
->>>>>>> bd1dfb90bda4207c91abbcc3a4cfbba980020236
+
