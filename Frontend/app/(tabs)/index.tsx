@@ -2,28 +2,11 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { Stack } from "expo-router";
 import Header from "@/components/header";
-import Allitems from "@/components/allitems";
-import Allpantries from "@/components/allpantries";
+import Items from "@/components/items";
 import SearchBar from "@/components/searchbar";
 import Colors from "@/constants/Colors";
 
-const tab = [
-  {
-    name: "All pantries",
-  },
-  {
-    name: "All items",
-  },
-];
-
 const index = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const selectTab = (index: number) => {
-    setActiveIndex(index);
-    console.log("On " + tab[index].name + " tab");
-  };
-
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -31,24 +14,8 @@ const index = () => {
           header: () => <Header />,
         }}
       />
-
       <SearchBar />
-
-      <View style={styles.tabContainer}>
-        {tab.map((item, index) => (
-          <TouchableOpacity
-            onPress={() => selectTab(index)}
-            key={index}
-            style={ styles.tab}
-          >
-            <Text style={[styles.text,activeIndex === index ? styles.textActive: styles.textInActive]}>
-            {item.name}</Text>
-            <View style ={[styles.rectangle,activeIndex === index ? styles.rectangleActive: styles.rectangleInActive]}></View>
-          </TouchableOpacity>
-        ))}
-      </View>
-      {activeIndex === 0 && <Allpantries />}
-      {activeIndex === 1 && <Allitems />}
+      <Items />
     </View>
   );
 };

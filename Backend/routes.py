@@ -2,6 +2,7 @@ from flask import jsonify, request, abort, Blueprint
 from models import db, User, PantryItem, Recipe, Favorite
 from flask import current_app as app
 from datetime import datetime
+import traceback
 
 backend = Blueprint('backend', __name__, url_prefix='/backend')
 
@@ -99,6 +100,7 @@ def add_pantry_item():
         return jsonify({'message': 'Pantry item added successfully', 'item_id': new_item.id}), 201
     except Exception as e:
         db.session.rollback()
+        print(traceback.format_exc())  # This will print the traceback to your console or log
         return jsonify({'error': str(e)}), 500
 
 
@@ -149,3 +151,4 @@ def login_user():
         return jsonify({'user_id': user.id}), 200
     else:
         return jsonify({'error': 'Invalid credentials'}), 404
+

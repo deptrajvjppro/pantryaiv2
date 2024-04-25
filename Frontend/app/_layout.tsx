@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
+import React from 'react';
 
 //                 {/*INITIAL_LAYOUT */}                  //
 
@@ -111,12 +112,7 @@ function RootLayoutNav() {
          
         }} 
         />
-        <Stack.Screen
-          name = "listing/[id]"
-          options={{
-            headerTitle: ''
-        }}
-        />
+      
       </Stack>
     
   );
