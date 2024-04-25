@@ -56,7 +56,7 @@ const Items = () => {
   const deleteItem = async (itemId: number) => {
     try {
       const response = await fetch(
-        `http://10.0.0.201:5000/backend/delete_pantry_item`,
+        `http://127.0.0.1:5000/backend/delete_pantry_item`,
         {
           method: "DELETE",
         }
@@ -74,7 +74,7 @@ const Items = () => {
   const addItem = async () => {
     try {
       const response = await fetch(
-        "http://10.0.0.201:5000/backend/add_pantry_item",
+        "http://127.0.0.1:5000/backend/add_pantry_item",
         {
           method: "POST",
           headers: {
