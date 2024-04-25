@@ -2,6 +2,7 @@ from flask import jsonify, request, abort, Blueprint
 from models import db, User, PantryItem, Recipe, Favorite
 from flask import current_app as app
 from datetime import datetime
+import traceback
 
 backend = Blueprint('backend', __name__, url_prefix='/backend')
 
@@ -99,6 +100,7 @@ def add_pantry_item():
         return jsonify({'message': 'Pantry item added successfully', 'item_id': new_item.id}), 201
     except Exception as e:
         db.session.rollback()
+        print(traceback.format_exc())  # This will print the traceback to your console or log
         return jsonify({'error': str(e)}), 500
 
 
@@ -127,6 +129,7 @@ def search_pantry_item_by_name():
     else:
         return jsonify({'message': 'No pantry items found with that name'}), 404
 
+# http://127.0.0.1:5000/backend/get_pantry_items_by_user
 @backend.route('/get_pantry_items_by_user', methods=['GET'])
 def get_pantry_items_by_user():
     user_id = request.args.get('user_id')

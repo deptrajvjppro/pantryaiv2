@@ -12,7 +12,6 @@ import {
   Alert,
 } from "react-native";
 import Colors from "@/constants/Colors";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -40,7 +39,7 @@ const Items = () => {
   const fetchItems = async () => {
     try {
       const response = await fetch(
-        "http://10.0.0.201:5000/backend/get_pantry_items_by_user"
+        "http://127.0.0.1:5000/backend/get_pantry_items_by_user"
       ); // Adjust according to actual API
       const data = await response.json();
       if (response.ok) {
@@ -56,7 +55,11 @@ const Items = () => {
   const deleteItem = async (itemId: number) => {
     try {
       const response = await fetch(
+<<<<<<< HEAD
         `http://127.0.0.1:5000/backend/delete_pantry_item`,
+=======
+        "http://127.0.0.1:5000/backend/delete_pantry_item",
+>>>>>>> bbf032509fba3281249b5fc716a9bef66bc1a19c
         {
           method: "DELETE",
         }
@@ -83,8 +86,8 @@ const Items = () => {
           body: JSON.stringify({
             name: newItemName,
             expiry_date: newItemExpiryDate,
-            quantity: parseInt(newItemQuantity, 10),
             user_id: 1, // Assuming user_id is 1
+            quantity: parseInt(newItemQuantity, 10)
           }),
         }
       );
@@ -126,21 +129,23 @@ const Items = () => {
       >
         <View style={styles.modalView}>
           <TextInput
-            style={styles.input}
-            placeholder="Item Name"
-            placeholderTextColor={"black"}
+              style={styles.input}
+              placeholder="Item Name"
+              placeholderTextColor={"black"}
+              onChangeText={setNewItemName}  // This updates the state for newItemName
           />
           <TextInput
-            style={styles.input}
-            placeholderTextColor={"black"}
-            placeholder="Expiration date (MM/DD/YYYY)"
+              style={styles.input}
+              placeholder="Expiration date (YYYY/MM/DD)"
+              placeholderTextColor={"black"}
+              onChangeText={setNewItemExpiryDate}  // This updates the state for newItemExpiryDate
           />
-
           <TextInput
-            keyboardType="numeric"
-            placeholderTextColor={"black"}
-            style={styles.input}
-            placeholder="Quantity"
+              keyboardType="numeric"
+              placeholderTextColor={"black"}
+              style={styles.input}
+              placeholder="Quantity"
+              onChangeText={(text) => setNewItemQuantity(text)}  // This updates the state for newItemQuantity
           />
           <View style={styles.addOrCancelArea}>
             <TouchableOpacity style={styles.checkStyle} onPress={addItem}>
