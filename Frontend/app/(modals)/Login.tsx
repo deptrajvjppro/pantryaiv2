@@ -17,7 +17,7 @@ const Login = () => {
   const router = useRouter();
   
   const handleLogin = async () => {
-    const response = await fetch("http://10.0.0.201:5000/backend/loginUser", {
+    const response = await fetch("http://192.168.1.15:5000/backend/loginUser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,7 +27,7 @@ const Login = () => {
 
     const id = await response.json();
     if (id && response.ok) {
-      console.log("Login successful, user ID:", id);
+      console.log("Login successful, user ID:", id['user_id']);
       // Redirect or perform further actions
       router.push('/(tabs)/Index')
     } else {
@@ -39,7 +39,7 @@ const Login = () => {
   };
 
   const handleSignup = async () => {
-    const response = await fetch("http://10.0.0.201:5000/backend/add_user", {
+    const response = await fetch("http://192.168.1.15:5000/backend/add_user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

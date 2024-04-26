@@ -39,7 +39,7 @@ const Items = () => {
   const fetchItems = async () => {
     try {
       const response = await fetch(
-        "http://10.0.0.201:5000/backend/get_pantry_items_by_user"
+        "http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}"
       ); // Adjust according to actual API
       const items = await response.json();
       
@@ -56,7 +56,7 @@ const Items = () => {
   const deleteItem = async (itemId: number) => {
     try {
       const response = await fetch(
-        "http://10.0.0.201:5000/backend/delete_pantry_item",
+        "http://192.168.1.15:5000/backend/delete_pantry_item",
         {
           method: "DELETE",
         }
@@ -74,7 +74,7 @@ const Items = () => {
   const addItem = async () => {
     try {
       const response = await fetch(
-        "http://10.0.0.201:5000/backend/add_pantry_item",
+        "http://192.168.1.15:5000/backend/add_pantry_item",
         {
           method: "POST",
           headers: {
@@ -93,6 +93,7 @@ const Items = () => {
         fetchItems(); // Refresh the list after adding an item
         console.log("Added item")
       } else {
+        const errorData = await response.json();
         throw new Error("Error adding item");
       }
     } catch (error: any) {
