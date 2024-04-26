@@ -1,62 +1,46 @@
-import { View, Text, Button, StyleSheet, Image } from "react-native";
+import { View, Text, Button, StyleSheet } from "react-native";
 import React from "react";
-import { useAuth, useUser } from "@clerk/clerk-expo";
-import { Link, Stack } from "expo-router";
+import { useRouter } from 'expo-router';
 import Header from "@/components/header";
 
 const Account = () => {
-  const { signOut, isSignedIn } = useAuth();
-  const { user } = useUser();
+  const rotuer = useRouter();
+
+  const handleLogout = () => {
+    // Perform any necessary logout operations like clearing token or user data
+    // For example, if using AsyncStorage: await AsyncStorage.removeItem('userToken');
+
+    // Navigate to the login screen
+    rotuer.navigate('Login'); // Make sure 'Login' matches the route name of your login screen
+  };
+
   return (
     <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          header: () => <Header />,
-        }}
-      />
-      <View style={styles.notiView}>
-    
-        <Image style={styles.avartaStyle} source={{ uri: user?.imageUrl }} />
-        <Text style = {styles.text}>{user?.fullName}</Text>
-        
-        {/* Log out button */}
-        <Button title="Log out" onPress={() => signOut()} />
-        {!isSignedIn && (
-          <Link href={"/(modals)/Login"}>
-            <Text style={{ color: "#FFF" }}>Loign</Text>
-          </Link>
-        )}
-      </View>
+      <Header />
+      {/* Your account details UI here */}
+      <Text style={styles.text}>Account Page</Text>
+
+      {/* Logout Button */}
+      <Button title="Logout" onPress={handleLogout} color="#841584" />
+
+      {/* Your other account UI elements */}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFF",
   },
-  text:{
-    color: "#FFFF",
-    alignSelf:"center",
+  text: {
+    alignSelf: "center",
     fontFamily: "mon-sb",
     margin: 20,
-    fontSize: 20
+    fontSize: 20,
+    color: "#333", // Updated for visibility against the background
   },
-  notiView: {
-    backgroundColor: "black",
-    width: "100%",
-    height: "100%",
-    flex: 1,
-  },
-  
-  avartaStyle: {
-    width: 100,
-    height: 100,
-    alignSelf:"center",
-    borderWidth: 1,
-    borderColor: "#ffffff",
-    borderRadius: 50,
-    marginTop:40
-  },
+  // Add other styles if necessary
 });
+
 export default Account;

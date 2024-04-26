@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { ClerkProvider, useAuth } from '@clerk/clerk-expo';
+import React from 'react';
 
 //                 {/*INITIAL_LAYOUT */}                  //
 
@@ -86,7 +87,7 @@ function RootLayoutNav() {
     //Clerk is ready but the user is not yet authenticated
     if (isLoaded && !isSignedIn) {
       //push the login page
-      router.push('/(modals)/Login');
+      router.push('/Login');
     }
   }, [isLoaded])
 
@@ -111,12 +112,7 @@ function RootLayoutNav() {
          
         }} 
         />
-        <Stack.Screen
-          name = "listing/[id]"
-          options={{
-            headerTitle: ''
-        }}
-        />
+      
       </Stack>
     
   );
