@@ -14,8 +14,8 @@ import {
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-
-
+import { useRoute } from '@react-navigation/native';
+import { useUser } from '../app/context/UserContext';
 interface Item {
   id: number;
   name: string;
@@ -28,30 +28,49 @@ const Items = () => {
   const [newItemQuantity, setNewItemQuantity] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
+  const route = useRoute();
+  const {user_id} = useUser();
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
 
   useEffect(() => {
-    fetchItems();
-  }, []);
+    if (user_id && user_id.user_id !== undefined) {
+      fetchItems();
+    }
+  }, [user_id]); // Depend on user_id.user_id to re-trigger the effect when it changes
+
 
   const fetchItems = async () => {
+    // Ensure you have a valid user_id
+    if (!user_id || user_id.user_id === undefined) {
+      console.error("User ID is undefined or not properly set.");
+      return; // Exit the function if user_id is not set
+    }
+
+    // Construct the URL with the correct user_id
+    const url = `http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`;
     try {
-      const response = await fetch(
-        "http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}"
-      ); // Adjust according to actual API
+      const response = await fetch(url, {
+        method: 'GET', // Assuming GET is the correct method for your endpoint
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
       const items = await response.json();
-      
+      console.log("Current user_id object:", user_id);
+      console.log("Using user_id for fetch:", user_id ? user_id.user_id : "Not Set");
+
       if (items && response.ok) {
         setItems(items);
       } else {
         throw new Error(items.message || "Error fetching items");
       }
-    } catch (error: any) {
-      Alert.alert("Error", error.message);
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to fetch items");
     }
   };
+
 
   const deleteItem = async (itemId: number) => {
     try {
@@ -92,6 +111,7 @@ const Items = () => {
         setModalVisible(false);
         fetchItems(); // Refresh the list after adding an item
         console.log("Added item")
+        console.log (user_id + " added")
       } else {
         const errorData = await response.json();
         throw new Error("Error adding item");
