@@ -35,30 +35,47 @@ const Items = () => {
   };
 
   useEffect(() => {
-    fetchItems();
-  }, []);
+    if (user_id && user_id.user_id !== undefined) {
+      fetchItems();
+    }
+  }, [user_id.user_id]); // Depend on user_id.user_id to re-trigger the effect when it changes
+
 
   const fetchItems = async () => {
+    // Ensure you have a valid user_id
+    if (!user_id || user_id.user_id === undefined) {
+      console.error("User ID is undefined or not properly set.");
+      return; // Exit the function if user_id is not set
+    }
+
+    // Construct the URL with the correct user_id
+    const url = `http://127.0.0.1:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`;
     try {
-      const response = await fetch(
-        "http://10.0.0.201:5000/backend/get_pantry_items_by_user"
-      ); // Adjust according to actual API
+      const response = await fetch(url, {
+        method: 'GET', // Assuming GET is the correct method for your endpoint
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
       const items = await response.json();
-      
+      console.log("Current user_id object:", user_id);
+      console.log("Using user_id for fetch:", user_id ? user_id.user_id : "Not Set");
+
       if (items && response.ok) {
         setItems(items);
       } else {
         throw new Error(items.message || "Error fetching items");
       }
-    } catch (error: any) {
-      Alert.alert("Error", error.message);
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to fetch items");
     }
   };
+
 
   const deleteItem = async (itemId: number) => {
     try {
       const response = await fetch(
-        "http://10.0.0.201:5000/backend/delete_pantry_item",
+        "http://127.0.0.1:5000/backend/delete_pantry_item",
         {
           method: "DELETE",
         }

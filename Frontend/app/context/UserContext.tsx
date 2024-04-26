@@ -14,12 +14,18 @@ interface UserProviderProps {
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user_id, setUserId] = useState<string | null>(null);
 
+  const handleSetUserId = (id: string | null) => {
+    console.log("Setting user ID:", id);
+    setUserId(id);
+  }
+
   return (
-    <UserContext.Provider value={{ user_id, setUserId }}>
-      {children}
-    </UserContext.Provider>
+      <UserContext.Provider value={{ user_id, setUserId: handleSetUserId }}>
+        {children}
+      </UserContext.Provider>
   );
 };
+
 
 export const useUser = (): UserContextType => {
   const context = useContext(UserContext);

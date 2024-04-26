@@ -19,7 +19,7 @@ const Login = () => {
   const router = useRouter();
   const { setUserId } = useUser(); 
   const handleLogin = async () => {
-    const response = await fetch("http://10.0.0.201:5000/backend/loginUser", {
+    const response = await fetch("http://127.0.0.1:5000/backend/loginUser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -42,7 +42,7 @@ const Login = () => {
   };
 
   const handleSignup = async () => {
-    const response = await fetch("http://10.0.0.201:5000/backend/add_user", {
+    const response = await fetch("http://127.0.0.1:5000/backend/add_user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
