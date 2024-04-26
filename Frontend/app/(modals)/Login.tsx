@@ -9,17 +9,15 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
-
-import Colors from "@/constants/Colors";
 import { defaultStyle } from "@/constants/Styles";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-
+  
   const handleLogin = async () => {
-    const response = await fetch("http://127.0.0.1:5000/backend/loginUser", {
+    const response = await fetch("http://10.0.0.201:5000/backend/loginUser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -27,10 +25,11 @@ const Login = () => {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await response.json();
-    if (data.id) {
-      console.log("Login successful, user ID:", data.id);
+    const id = await response.json();
+    if (id && response.ok) {
+      console.log("Login successful, user ID:", id);
       // Redirect or perform further actions
+      router.push('/(tabs)/Index')
     } else {
       Alert.alert(
         "Login failed",
@@ -40,7 +39,7 @@ const Login = () => {
   };
 
   const handleSignup = async () => {
-    const response = await fetch("http://127.0.0.1:5000/backend/add_user", {
+    const response = await fetch("http://10.0.0.201:5000/backend/add_user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -48,12 +47,12 @@ const Login = () => {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await response.json();
-    if (data.id) {
-      console.log("Signup successful, new user ID:", data.id);
+    const id = await response.json();
+    if (id) {
+      console.log("Signup successful, new user ID:", id);
       // Redirect or perform further actions
     } else {
-      Alert.alert("Signup failed", data.error || "Could not create user");
+      Alert.alert("Signup failed", id.error || "Could not create user");
     }
   };
 
@@ -83,7 +82,7 @@ const Login = () => {
         style={[defaultStyle.inputBox, { marginTop: 20 }]}
       />
 
-      <TouchableOpacity style={defaultStyle.loginButton} onPress={handleLogin}>
+      <TouchableOpacity style={defaultStyle.loginButton} onPress={handleLogin }>
         <Text style={styles.textBox}>Log in</Text>
       </TouchableOpacity>
 

@@ -39,13 +39,14 @@ const Items = () => {
   const fetchItems = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/backend/get_pantry_items_by_user"
+        "http://10.0.0.201:5000/backend/get_pantry_items_by_user"
       ); // Adjust according to actual API
-      const data = await response.json();
-      if (response.ok) {
-        setItems(data);
+      const items = await response.json();
+      
+      if (items && response.ok) {
+        setItems(items);
       } else {
-        throw new Error(data.message || "Error fetching items");
+        throw new Error(items.message || "Error fetching items");
       }
     } catch (error: any) {
       Alert.alert("Error", error.message);
@@ -55,11 +56,7 @@ const Items = () => {
   const deleteItem = async (itemId: number) => {
     try {
       const response = await fetch(
-<<<<<<< HEAD
-        `http://127.0.0.1:5000/backend/delete_pantry_item`,
-=======
-        "http://127.0.0.1:5000/backend/delete_pantry_item",
->>>>>>> bbf032509fba3281249b5fc716a9bef66bc1a19c
+        "http://10.0.0.201:5000/backend/delete_pantry_item",
         {
           method: "DELETE",
         }
@@ -77,7 +74,7 @@ const Items = () => {
   const addItem = async () => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/backend/add_pantry_item",
+        "http://10.0.0.201:5000/backend/add_pantry_item",
         {
           method: "POST",
           headers: {
@@ -94,6 +91,7 @@ const Items = () => {
       if (response.ok) {
         setModalVisible(false);
         fetchItems(); // Refresh the list after adding an item
+        console.log("Added item")
       } else {
         throw new Error("Error adding item");
       }

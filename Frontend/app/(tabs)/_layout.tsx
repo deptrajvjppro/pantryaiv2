@@ -28,7 +28,7 @@ const Layout = () => {
         }}>
             
             <Tabs.Screen 
-                name = 'index' 
+                name = 'Index' 
                 options = {{
                     tabBarLabel: 'Pantry',
                     tabBarIcon: ({ color, size}) =>

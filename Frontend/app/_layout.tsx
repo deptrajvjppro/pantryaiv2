@@ -87,7 +87,7 @@ function RootLayoutNav() {
     //Clerk is ready but the user is not yet authenticated
     if (isLoaded && !isSignedIn) {
       //push the login page
-      router.push('/(modals)/Login');
+      router.push('/Login');
     }
   }, [isLoaded])
 
