@@ -5,61 +5,50 @@ const MealPlanning = () => {
   const [chatHistory, setChatHistory] = useState([{ user: "", bot: "Hello, how may I assist you?" }]);
   const [userInput, setUserInput] = useState("");
   const [inputKey, setInputKey] = useState(Math.random().toString());
-  const [recipeSuggestion, setRecipeSuggestion] = useState("Generate recipe suggestion");
+  const [pantryItemNames, setPantryItemNames] = useState([]);
 
-  const fetchPantryItemAndGenerateRecipe = async () => {
+  const sendMessage = async (message) => {
+    setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Processing..." }]);
     try {
-      const response = await fetch("http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=1");
-      if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+      const response = await fetch("http://192.168.1.15:5000/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setChatHistory(prevHistory => [...prevHistory, { user: message, bot: data.bot_response }]);
+      } else {
+        console.error("Fetch error:", response.statusText);
+        setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Error: Could not fetch response." }]);
       }
-      try {
-          const pantryItems = await response.json();
-          if (pantryItems.length > 0) {
-              const item = pantryItems[0].name; // Assume we take the first item for simplicity
-              setRecipeSuggestion(`Generate a recipe suggestion for ${item}`);
-          } else {
-              setRecipeSuggestion("No pantry items found for user.");
-          }
-      } catch (e) {
-          console.error("Error parsing JSON!", e);
-          setRecipeSuggestion("Error parsing JSON!");
-      }
-  } catch (error) {
+    } catch (error) {
       console.error("Fetch error:", error.message);
-      setRecipeSuggestion(`Fetch error: ${error.message}`);
+      setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Exception: Could not fetch response." }]);
     }
+    setUserInput("");
   };
 
-  const sendMessage = async () => {
-    if (userInput.trim()) {
-      const updatedChatHistory = [...chatHistory, { user: userInput, bot: "..." }];
-      setChatHistory(updatedChatHistory);
-
-      try {
-        const response = await fetch("http://192.168.1.15:5000/chatbot", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userInput }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          updatedChatHistory[updatedChatHistory.length - 1].bot = data.bot_response;
-          setChatHistory(updatedChatHistory);
-        } else {
-          console.error("Fetch error:", response.statusText);
-          updatedChatHistory[updatedChatHistory.length - 1].bot = "Error: Could not fetch response.";
-          setChatHistory(updatedChatHistory);
-        }
-      } catch (error) {
-        console.error("Fetch error:", error.message);
-        updatedChatHistory[updatedChatHistory.length - 1].bot = "Exception: Could not fetch response.";
-        setChatHistory(updatedChatHistory);
+  const fetchPantryItemAndGenerateRecipe = async (user_id = 1) => {
+    try {
+      const response = await fetch(`http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      setUserInput("");
-      setInputKey(Math.random().toString());
+      const pantryItems = await response.json();
+      if (pantryItems.length > 0) {
+        const names = pantryItems.map(item => item.name);
+        setPantryItemNames(names);
+        sendMessage(`Generate recipe for ${names.join(", ")}`);
+      } else {
+        setPantryItemNames([]);
+        sendMessage("No pantry items found.");
+      }
+    } catch (error) {
+      console.error("Fetch error:", error.message);
+      setPantryItemNames([]);
+      sendMessage(`Fetch error: ${error.message}`);
     }
   };
 
@@ -73,10 +62,13 @@ const MealPlanning = () => {
         <ScrollView style={styles.chatContainer} contentContainerStyle={{ flexGrow: 1 }}>
           {chatHistory.map((chat, index) => (
             <View key={index} style={styles.messageContainer}>
-              <Text style={styles.userMessage}>User: {chat.user}</Text>
-              <Text style={styles.botMessage}>PantryAI: {chat.bot}</Text>
+              <Text style={styles.user}>User: <Text style={styles.userMessage}>{chat.user}</Text> </Text>
+              <Text style={styles.botMessage}><Text style={styles.PantryAI}>PantryAI:</Text> {chat.bot}</Text>
             </View>
           ))}
+          {/* {pantryItemNames.map((name, index) => (
+            <Text key={index}>{name}</Text>
+          ))} */}
         </ScrollView>
         <TextInput
           key={inputKey}
@@ -86,10 +78,14 @@ const MealPlanning = () => {
           placeholder="Type your message here..."
           placeholderTextColor="gray"
         />
-        <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
+        <TouchableOpacity onPress={() => sendMessage(userInput)} style={styles.sendButton}>
           <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
-        <Button title={recipeSuggestion} onPress={fetchPantryItemAndGenerateRecipe} />
+
+        <TouchableOpacity onPress={() => fetchPantryItemAndGenerateRecipe(1)} style={styles.customButton}>
+          <Text style={styles.customButtonText}>Generate Pantry Items</Text>
+
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -98,25 +94,48 @@ const MealPlanning = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: 'white',
+    padding: 10,
+    backgroundColor: 'black',
   },
   chatContainer: {
     flex: 1,
   },
   messageContainer: {
-    marginBottom: 10,
+    marginBottom: 20,
+    padding: 10,
+    backgroundColor: '#f0f0f0',  
+    borderRadius: 5,             
+    borderWidth: 1,              
+    borderColor: '#ddd',         
+    shadowColor: '#000',         
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
   },
-  userMessage: {
+
+  user: {
     fontWeight: 'bold',
+  },
+
+  userMessage: {
+    fontStyle: 'normal',
+    fontWeight: "normal",
+  },
+  PantryAI: {
+    fontWeight: "bold",
   },
   botMessage: {
     fontStyle: 'italic',
+    // color: '#666',
   },
   input: {
     borderWidth: 1,
     marginBottom: 10,
     padding: 10,
+    borderColor: '#ccc',       
+    backgroundColor: '#fff', 
+    
   },
   sendButton: {
     backgroundColor: '#007bff',
@@ -129,6 +148,19 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
   },
+  customButton: {
+    backgroundColor: '#007bff', // Blue background
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    marginTop: 5,
+  },
+  customButtonText: {
+    color: 'white', // White text
+    fontSize: 16,
+  },
+
 });
 
 export default MealPlanning;
