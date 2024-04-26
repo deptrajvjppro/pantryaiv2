@@ -38,7 +38,7 @@ const Items = () => {
     if (user_id && user_id.user_id !== undefined) {
       fetchItems();
     }
-  }, [user_id.user_id]); // Depend on user_id.user_id to re-trigger the effect when it changes
+  }, [user_id]); // Depend on user_id.user_id to re-trigger the effect when it changes
 
 
   const fetchItems = async () => {
@@ -49,7 +49,7 @@ const Items = () => {
     }
 
     // Construct the URL with the correct user_id
-    const url = `http://127.0.0.1:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`;
+    const url = `http://10.0.0.201:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`;
     try {
       const response = await fetch(url, {
         method: 'GET', // Assuming GET is the correct method for your endpoint
@@ -66,7 +66,7 @@ const Items = () => {
       } else {
         throw new Error(items.message || "Error fetching items");
       }
-    } catch (error) {
+    } catch (error:any) {
       Alert.alert("Error", error.message || "Failed to fetch items");
     }
   };
@@ -75,7 +75,7 @@ const Items = () => {
   const deleteItem = async (itemId: number) => {
     try {
       const response = await fetch(
-        "http://127.0.0.1:5000/backend/delete_pantry_item",
+        "http://10.0.0.201:5000/backend/delete_pantry_item",
         {
           method: "DELETE",
         }

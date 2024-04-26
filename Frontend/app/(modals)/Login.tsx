@@ -12,14 +12,14 @@ import { useRouter } from "expo-router";
 import { defaultStyle } from "@/constants/Styles";
 import { useUser } from "../context/UserContext"; 
 
-
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const { setUserId } = useUser(); 
+  
   const handleLogin = async () => {
-    const response = await fetch("http://127.0.0.1:5000/backend/loginUser", {
+    const response = await fetch("http://10.0.0.201:5000/backend/loginUser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -29,7 +29,7 @@ const Login = () => {
     
     const id = await response.json();
     if (id && response.ok) {
-      console.log("Login successful, user ID:", id);
+      console.log("Login successful, user ID:", id['user_id']);
       // Redirect or perform further actions
       setUserId(id);
       router.push('/(tabs)/Index')
@@ -42,7 +42,7 @@ const Login = () => {
   };
 
   const handleSignup = async () => {
-    const response = await fetch("http://127.0.0.1:5000/backend/add_user", {
+    const response = await fetch("http://10.0.0.201:5000/backend/add_user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
