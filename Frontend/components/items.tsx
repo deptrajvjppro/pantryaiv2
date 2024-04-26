@@ -14,8 +14,8 @@ import {
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-
-
+import { useRoute } from '@react-navigation/native';
+import { useUser } from '../app/context/UserContext';
 interface Item {
   id: number;
   name: string;
@@ -28,6 +28,8 @@ const Items = () => {
   const [newItemQuantity, setNewItemQuantity] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
+  const route = useRoute();
+  const {user_id} = useUser();
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
@@ -92,6 +94,7 @@ const Items = () => {
         setModalVisible(false);
         fetchItems(); // Refresh the list after adding an item
         console.log("Added item")
+        console.log (user_id + " added")
       } else {
         throw new Error("Error adding item");
       }

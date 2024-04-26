@@ -10,12 +10,14 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { defaultStyle } from "@/constants/Styles";
+import { useUser } from "../context/UserContext"; 
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  
+  const { setUserId } = useUser(); 
   const handleLogin = async () => {
     const response = await fetch("http://10.0.0.201:5000/backend/loginUser", {
       method: "POST",
@@ -24,11 +26,12 @@ const Login = () => {
       },
       body: JSON.stringify({ email, password }),
     });
-
+    
     const id = await response.json();
     if (id && response.ok) {
       console.log("Login successful, user ID:", id);
       // Redirect or perform further actions
+      setUserId(id);
       router.push('/(tabs)/Index')
     } else {
       Alert.alert(
