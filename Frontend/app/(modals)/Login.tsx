@@ -12,12 +12,12 @@ import { useRouter } from "expo-router";
 import { defaultStyle } from "@/constants/Styles";
 import { useUser } from "../context/UserContext"; 
 
-
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
   const { setUserId } = useUser(); 
+  
   const handleLogin = async () => {
     const response = await fetch("http://192.168.1.15:5000/backend/loginUser", {
       method: "POST",
@@ -27,19 +27,18 @@ const Login = () => {
       body: JSON.stringify({ email, password }),
     });
     
-    const id = await response.json();
-    if (id && response.ok) {
-      console.log("Login successful, user ID:", id['user_id']);
-      // Redirect or perform further actions
-      setUserId(id);
-      router.push('/(tabs)/Index')
+    const result = await response.json();
+    if (response.ok) {
+      console.log("Login successful, user ID:", result['user_id']);
+      setUserId(result['user_id']);  // Make sure this is the user_id and not an object
+      router.push('/(tabs)/Index');
     } else {
       Alert.alert(
         "Login failed",
-        "No user found with that email and password combination"
+        result.error || "No user found with that email and password combination"
       );
     }
-  };
+};
 
   const handleSignup = async () => {
     const response = await fetch("http://192.168.1.15:5000/backend/add_user", {

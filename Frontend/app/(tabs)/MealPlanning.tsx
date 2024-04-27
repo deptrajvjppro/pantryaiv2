@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import { useUser } from "../context/UserContext"; // Assuming this is the correct path to your context
 
 const MealPlanning = () => {
   const [chatHistory, setChatHistory] = useState([{ user: "", bot: "Hello, how may I assist you?" }]);
   const [userInput, setUserInput] = useState("");
   const [inputKey, setInputKey] = useState(Math.random().toString());
-  const [pantryItemNames, setPantryItemNames] = useState([]);
+  const { user_id } = useUser(); // Use the useUser hook to get the userId
 
   const sendMessage = async (message) => {
     setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Processing..." }]);
@@ -30,67 +31,59 @@ const MealPlanning = () => {
     setUserInput("");
   };
 
-  const fetchPantryItemAndGenerateRecipe = async (user_id = 1) => {
+  const fetchPantryItemAndGenerateRecipe = async () => {
+    if (!user_id) {
+      console.error("No user ID available");
+      sendMessage("User ID is not set. Please log in.");
+      return;
+    }
+  
+    console.log("Fetching items for user ID:", user_id); // Assuming user_id is just a string
     try {
-      const response = await fetch(`http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}`);
+      const url = `http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}`;
+      console.log("Request URL:", url); // Ensure this outputs a URL with a simple numeric ID
+      const response = await fetch(url);
+  
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+  
       const pantryItems = await response.json();
+      console.log("Pantry items received:", pantryItems);
+  
       if (pantryItems.length > 0) {
         const names = pantryItems.map(item => item.name);
-        setPantryItemNames(names);
         sendMessage(`Generate recipe for ${names.join(", ")}`);
       } else {
-        setPantryItemNames([]);
         sendMessage("No pantry items found.");
       }
     } catch (error) {
       console.error("Fetch error:", error.message);
-      setPantryItemNames([]);
       sendMessage(`Fetch error: ${error.message}`);
     }
   };
-
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-    >
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}>
       <View style={styles.container}>
         <ScrollView style={styles.chatContainer} contentContainerStyle={{ flexGrow: 1 }}>
           {chatHistory.map((chat, index) => (
             <View key={index} style={styles.messageContainer}>
-              <Text style={styles.user}>User: <Text style={styles.userMessage}>{chat.user}</Text> </Text>
+              <Text style={styles.user}>User: <Text style={styles.userMessage}>{chat.user}</Text></Text>
               <Text style={styles.botMessage}><Text style={styles.PantryAI}>PantryAI:</Text> {chat.bot}</Text>
             </View>
           ))}
-          {/* {pantryItemNames.map((name, index) => (
-            <Text key={index}>{name}</Text>
-          ))} */}
         </ScrollView>
-        <TextInput
-          key={inputKey}
-          value={userInput}
-          onChangeText={setUserInput}
-          style={styles.input}
-          placeholder="Type your message here..."
-          placeholderTextColor="gray"
-        />
+        <TextInput key={inputKey} value={userInput} onChangeText={setUserInput} style={styles.input} placeholder="Type your message here..." placeholderTextColor="gray" />
         <TouchableOpacity onPress={() => sendMessage(userInput)} style={styles.sendButton}>
           <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => fetchPantryItemAndGenerateRecipe(1)} style={styles.customButton}>
+        <TouchableOpacity onPress={fetchPantryItemAndGenerateRecipe} style={styles.customButton}>
           <Text style={styles.customButtonText}>Generate Pantry Items</Text>
-
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

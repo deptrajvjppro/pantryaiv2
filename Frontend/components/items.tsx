@@ -66,7 +66,7 @@ const Items = () => {
       } else {
         throw new Error(items.message || "Error fetching items");
       }
-    } catch (error) {
+    } catch (error:any) {
       Alert.alert("Error", error.message || "Failed to fetch items");
     }
   };

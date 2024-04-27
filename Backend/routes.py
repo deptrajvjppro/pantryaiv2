@@ -137,6 +137,7 @@ def get_pantry_items_by_user():
         return jsonify({'error': 'User ID parameter is required'}), 400
     pantry_items = PantryItem.query.filter_by(user_id=user_id).all()
     items_data = [{'id': item.id, 'name': item.name, 'expiry_date': item.expiry_date.strftime('%Y-%m-%d'), 'quantity': item.quantity} for item in pantry_items]
+    print("Fetched items:", items_data)  # Log the data being sent
     return jsonify(items_data), 200
 
 
