@@ -68,7 +68,6 @@ export default function RootLayout() {
 
   return (
     <UserProvider>
-      
       <ClerkProvider
         publishableKey={CLERK_PUBLISHABLE_KEY!}
         tokenCache={tokenCache}

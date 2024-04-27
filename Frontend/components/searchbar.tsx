@@ -3,18 +3,20 @@ import React, { useState } from "react";
 
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
+interface SearchBarProps {
+  onSearch: (searchTerm: string) => void;
+}
 
-const SearchBar = () => {
-    const [searchInput, setSearchInput] = useState('');
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+  const [localSearchTerm, setLocalSearchTerm] = useState("");
 
-    const searchHandle = (query : string) =>{
-        setSearchInput(query);
-       
-    }
+  const submitSearch = () => {
+    onSearch(localSearchTerm);
+  };
+
   return (
     <View style={styles.actionRow}>
-      <Ionicons name="search" size={20} color= {Colors.lessgrey} />
-
+      <Ionicons name="search" size={20} color={Colors.lessgrey} />
       <TextInput
         style={{
           fontFamily: "mon",
@@ -22,15 +24,13 @@ const SearchBar = () => {
           justifyContent: "center",
           flex: 1,
         }}
-        value={searchInput}
-        onChangeText={(query) => searchHandle(query)}
+        value={localSearchTerm}
+        onChangeText={setLocalSearchTerm}
+        onSubmitEditing={submitSearch} // Call handleSearchSubmit when the user submits their search
         placeholder="Search for pantries or items ..."
-        placeholderTextColor= {Colors.lessgrey}
+        placeholderTextColor={Colors.lessgrey}
+        returnKeyType="search" // Adds a "search" button on the keyboard
       />
-
-      {/* <TouchableOpacity style = {styles.sortingButton}>
-              <FontAwesome name="sort" size={24} color="black"  />
-            </TouchableOpacity> */}
     </View>
   );
 };

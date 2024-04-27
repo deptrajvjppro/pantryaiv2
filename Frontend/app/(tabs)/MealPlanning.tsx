@@ -8,10 +8,10 @@ const MealPlanning = () => {
   const [inputKey, setInputKey] = useState(Math.random().toString());
   const { user_id } = useUser(); // Use the useUser hook to get the userId
 
-  const sendMessage = async (message) => {
+  const sendMessage = async (message: string) => {
     setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Processing..." }]);
     try {
-      const response = await fetch("http://192.168.1.15:5000/chatbot", {
+      const response = await fetch("http://10.0.0.201:5000/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
@@ -24,7 +24,7 @@ const MealPlanning = () => {
         console.error("Fetch error:", response.statusText);
         setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Error: Could not fetch response." }]);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Fetch error:", error.message);
       setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Exception: Could not fetch response." }]);
     }
@@ -40,7 +40,7 @@ const MealPlanning = () => {
   
     console.log("Fetching items for user ID:", user_id); // Assuming user_id is just a string
     try {
-      const url = `http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}`;
+      const url = `http://10.0.0.201:5000/backend/get_pantry_items_by_user?user_id=${user_id}`;
       console.log("Request URL:", url); // Ensure this outputs a URL with a simple numeric ID
       const response = await fetch(url);
   
@@ -52,12 +52,12 @@ const MealPlanning = () => {
       console.log("Pantry items received:", pantryItems);
   
       if (pantryItems.length > 0) {
-        const names = pantryItems.map(item => item.name);
+        const names = pantryItems.map((item: { name: any; }) => item.name);
         sendMessage(`Generate recipe for ${names.join(", ")}`);
       } else {
         sendMessage("No pantry items found.");
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Fetch error:", error.message);
       sendMessage(`Fetch error: ${error.message}`);
     }

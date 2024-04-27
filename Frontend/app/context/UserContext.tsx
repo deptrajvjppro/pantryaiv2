@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 interface UserContextType {
-  user_id: string | null;
-  setUserId: (id: string | null) => void;
+  user_id: number | null;
+  setUserId: (id: number | null) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -12,9 +12,9 @@ interface UserProviderProps {
 }
 
 export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
-  const [user_id, setUserId] = useState<string | null>(null);
-
-  const handleSetUserId = (id: string | null) => {
+  const [user_id, setUserId] = useState<number | null>(null);
+  
+  const handleSetUserId = (id: number | null) => {
     console.log("Setting user ID:", id);
     setUserId(id);
   }

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Stack } from "expo-router";
 import Header from "@/components/header";
 import Items from "@/components/items";
@@ -7,6 +7,38 @@ import SearchBar from "@/components/searchbar";
 import Colors from "@/constants/Colors";
 
 const index = () => {
+  const [items, setItems] = useState([]); // This will hold the list of items
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = useCallback(async (term:string) => {
+    setSearchTerm(term); // If you need to display the search term somewhere
+
+    const url = `http://10.0.0.201:5000/backend/search_pantry_item_by_name?name=${encodeURIComponent(term)}`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET', // or 'POST', if required by your backend
+        headers: {
+          'Content-Type': 'application/json',
+          // Include other headers if needed, like an Authorization token
+        },
+        // Include body if method is POST
+      });
+
+      const result = await response.json();
+      if (response.ok && result) {
+        console.log("Searched: " + result)
+        console.log ("Found " + result['name'])
+        setItems(result); // Update the items with the search result
+      } else {
+        console.error('Search failed:', result?.message || 'No message');
+        setItems([]); // Consider how you want to handle no results
+      }
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+      setItems([]); // Handle the error as needed
+    }
+  }, []);
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -14,7 +46,7 @@ const index = () => {
           header: () => <Header />,
         }}
       />
-      <SearchBar />
+      <SearchBar onSearch={handleSearch}/>
       <Items />
     </View>
   );

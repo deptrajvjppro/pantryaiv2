@@ -19,28 +19,18 @@ const Login = () => {
   const { setUserId } = useUser(); 
   
   const handleLogin = async () => {
-    const response = await fetch("http://192.168.1.15:5000/backend/loginUser", {
+    const response = await fetch("http://10.0.0.201:5000/backend/loginUser", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
     });
-    
-<<<<<<< HEAD
     const result = await response.json();
     if (response.ok) {
       console.log("Login successful, user ID:", result['user_id']);
       setUserId(result['user_id']);  // Make sure this is the user_id and not an object
       router.push('/(tabs)/Index');
-=======
-    const id = await response.json();
-    if (id && response.ok) {
-      console.log("Login successful, user ID:", id['user_id']);
-      // Redirect or perform further actions
-      setUserId(id);
-      router.push('/(tabs)/Index')
->>>>>>> 59fd93aaf639eced5537dab9e57f7ccae7c7fc87
     } else {
       Alert.alert(
         "Login failed",
@@ -50,7 +40,7 @@ const Login = () => {
 };
 
   const handleSignup = async () => {
-    const response = await fetch("http://192.168.1.15:5000/backend/add_user", {
+    const response = await fetch("http://10.0.0.201:5000/backend/add_user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
