@@ -49,7 +49,11 @@ const Items = () => {
     }
 
     // Construct the URL with the correct user_id
+<<<<<<< HEAD
     const url = `http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`;
+=======
+    const url = `http://10.0.0.201:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`;
+>>>>>>> 59fd93aaf639eced5537dab9e57f7ccae7c7fc87
     try {
       const response = await fetch(url, {
         method: 'GET', // Assuming GET is the correct method for your endpoint

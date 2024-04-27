@@ -27,11 +27,20 @@ const Login = () => {
       body: JSON.stringify({ email, password }),
     });
     
+<<<<<<< HEAD
     const result = await response.json();
     if (response.ok) {
       console.log("Login successful, user ID:", result['user_id']);
       setUserId(result['user_id']);  // Make sure this is the user_id and not an object
       router.push('/(tabs)/Index');
+=======
+    const id = await response.json();
+    if (id && response.ok) {
+      console.log("Login successful, user ID:", id['user_id']);
+      // Redirect or perform further actions
+      setUserId(id);
+      router.push('/(tabs)/Index')
+>>>>>>> 59fd93aaf639eced5537dab9e57f7ccae7c7fc87
     } else {
       Alert.alert(
         "Login failed",
