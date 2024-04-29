@@ -1,10 +1,79 @@
-from flask import jsonify, request, abort, Blueprint
-from models import ShoppingNote, db, User, PantryItem, Recipe, Favorite
-from flask import current_app as app
-from datetime import datetime
+import requests
+from bs4 import BeautifulSoup
+from flask import jsonify, request, Blueprint
+from models import db, PantryItem
 import traceback
+from datetime import datetime
+import json
+backend = Blueprint('backend', __name__, url_prefix='/backend')
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+import logging
+from flask import jsonify, request, Blueprint
+from models import db, PantryItem
+import traceback
+from datetime import datetime
+import os
+import requests
 
 backend = Blueprint('backend', __name__, url_prefix='/backend')
+
+def fetch_image_urls(query):
+    api_key = os.getenv('SERPAPI_API_KEY')
+    params = {
+        "engine": "bing_images",
+        "q": query,
+        "api_key": api_key
+    }
+    try:
+        response = requests.get("https://serpapi.com/search", params=params)
+        data = response.json()
+        if 'error' in data:
+            logging.error(f"API error: {data['error']['message']}")
+            return []
+
+        return [image['thumbnail'] for image in data.get('images_results', []) if 'thumbnail' in image]
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Request failed: {e}")
+        return []
+
+@backend.route('/add_pantry_item', methods=['POST'])
+def add_pantry_item():
+    data = request.get_json()
+    if not all(key in data for key in ['name', 'expiry_date', 'user_id', 'quantity']):
+        return jsonify({'error': 'Missing data'}), 400
+
+    name = data['name']
+    expiry_date = datetime.strptime(data['expiry_date'], '%Y-%m-%d')
+    quantity = data['quantity']
+    user_id = data['user_id']
+
+    try:
+        images = fetch_image_urls(name)
+        image_url = images[0] if images else "https://t4.ftcdn.net/jpg/01/74/93/71/360_F_174937114_nrZonPS1Xre7IKYA7EVU715GZGZio0bS.jpg"
+
+        new_item = PantryItem(
+            name=name,
+            expiry_date=expiry_date,
+            quantity=quantity,
+            user_id=user_id,
+            website_url=image_url
+        )
+        db.session.add(new_item)
+        db.session.commit()
+        return jsonify({'message': 'Pantry item added successfully', 'item_id': new_item.id, 'image_url': image_url}), 201
+    except Exception as e:
+        db.session.rollback()
+        logging.error("Error adding pantry item", exc_info=True)  # Use logging with traceback
+        return jsonify({'error': str(e)}), 500
+
+
+
+
+
 
 @backend.route('/search_user_by_email', methods=['GET'])
 def search_user_by_email():
@@ -83,27 +152,6 @@ def add_recipe():
     return jsonify({'message': 'Recipe added successfully', 'recipe_id': new_recipe.id}), 201
 
 
-@backend.route('/add_pantry_item', methods=['POST'])
-def add_pantry_item():
-    data = request.get_json()
-    if not all(key in data for key in ['name', 'expiry_date', 'user_id', 'quantity']):
-        return jsonify({'error': 'Missing data'}), 400
-    try:
-        new_item = PantryItem(
-            name=data['name'],
-            expiry_date=datetime.strptime(data['expiry_date'], '%Y-%m-%d'),
-            quantity=data['quantity'],
-            user_id=data['user_id']
-        )
-        db.session.add(new_item)
-        db.session.commit()
-        return jsonify({'message': 'Pantry item added successfully', 'item_id': new_item.id}), 201
-    except Exception as e:
-        db.session.rollback()
-        print(traceback.format_exc())  # This will print the traceback to your console or log
-        return jsonify({'error': str(e)}), 500
-
-
 @backend.route('/delete_pantry_item', methods=['DELETE'])
 def delete_pantry_item():
     item_id = request.args.get('item_id')
@@ -129,7 +177,7 @@ def search_pantry_item_by_name():
     else:
         return jsonify({'message': 'No pantry items found with that name'}), 404
 
-# http://127.0.0.1:5000/backend/get_pantry_items_by_user
+
 @backend.route('/get_pantry_items_by_user', methods=['GET'])
 def get_pantry_items_by_user():
     user_id = request.args.get('user_id')
@@ -137,7 +185,6 @@ def get_pantry_items_by_user():
         return jsonify({'error': 'User ID parameter is required'}), 400
     pantry_items = PantryItem.query.filter_by(user_id=user_id).all()
     items_data = [{'id': item.id, 'name': item.name, 'expiry_date': item.expiry_date.strftime('%Y-%m-%d'), 'quantity': item.quantity} for item in pantry_items]
-    print("Fetched items:", items_data)  # Log the data being sent
     return jsonify(items_data), 200
 
 
@@ -152,6 +199,7 @@ def login_user():
         return jsonify({'user_id': user.id}), 200
     else:
         return jsonify({'error': 'Invalid credentials'}), 404
+
 
 @backend.route('/add_note', methods=['POST'])
 def add_note():

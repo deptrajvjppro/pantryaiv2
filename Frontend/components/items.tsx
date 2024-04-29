@@ -46,7 +46,11 @@ const Items = () => {
     }
 
     // Construct the URL with the correct user_id
+<<<<<<< HEAD
     const url = `http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}`;
+=======
+    const url = `http://127.0.0.1:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`;
+>>>>>>> 5b94d2fbae5489d5410e6e80661315b3be6f20fe
     try {
       const response = await fetch(url, {
         method: "GET", // Assuming GET is the correct method for your endpoint
@@ -62,7 +66,11 @@ const Items = () => {
       } else {
         throw new Error(items.message || "Error fetching items");
       }
+<<<<<<< HEAD
     } catch (error: any) {
+=======
+    } catch (error) {
+>>>>>>> 5b94d2fbae5489d5410e6e80661315b3be6f20fe
       Alert.alert("Error", error.message || "Failed to fetch items");
     }
   };
@@ -70,7 +78,11 @@ const Items = () => {
   const deleteItem = async (itemId: number) => {
     try {
       const response = await fetch(
+<<<<<<< HEAD
         `http://192.168.1.15:5000/backend/delete_pantry_item?item_id=${itemId}&user_id=${user_id}`, // Make sure the URL and parameters match your backend API requirements
+=======
+        "http://127.0.0.1:5000/backend/delete_pantry_item",
+>>>>>>> 5b94d2fbae5489d5410e6e80661315b3be6f20fe
         {
           method: "DELETE", // Use the DELETE HTTP method
           headers: {
@@ -96,7 +108,7 @@ const Items = () => {
   const addItem = async () => {
     try {
       const response = await fetch(
-        "http://192.168.1.15:5000/backend/add_pantry_item",
+        "http://10.0.0.201:5000/backend/add_pantry_item",
         {
           method: "POST",
           headers: {
