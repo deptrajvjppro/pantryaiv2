@@ -38,7 +38,7 @@ const Items = () => {
     if (user_id && user_id.user_id !== undefined) {
       fetchItems();
     }
-  }, [user_id.user_id]); // Depend on user_id.user_id to re-trigger the effect when it changes
+  }, [user_id]); // Depend on user_id.user_id to re-trigger the effect when it changes
 
 
   const fetchItems = async () => {
