@@ -35,4 +35,12 @@ class Favorite(db.Model):
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
     # Additional fields and relationships as necessary
 
+class ShoppingNote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __grepr__(self):
+        return f'<ShoppingNote {self.content}>'
+
 # Add additional classes for other tables like OpenFoodFactsCache etc. here.

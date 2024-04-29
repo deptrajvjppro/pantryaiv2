@@ -1,6 +1,7 @@
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 import { useRouter } from 'expo-router';
+import { Stack } from "expo-router";
 import Header from "@/components/header";
 
 const Account = () => {
@@ -16,12 +17,18 @@ const Account = () => {
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Stack.Screen
+        options={{
+          header: () => <Header />,
+        }}
+      />
       {/* Your account details UI here */}
       <Text style={styles.text}>Account Page</Text>
 
       {/* Logout Button */}
-      <Button title="Logout" onPress={handleLogout} color="#841584" />
+      <TouchableOpacity  onPress={handleLogout} style={styles.logoutButton}>
+        <Text style={styles.logoutButtonText}>Log out</Text>
+      </TouchableOpacity>
 
       {/* Your other account UI elements */}
     </View>
@@ -40,7 +47,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#333", // Updated for visibility against the background
   },
-  // Add other styles if necessary
+  logoutButton: {
+    backgroundColor: '#007bff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    borderRadius: 5,
+    position: 'absolute',
+    bottom: 50,
+    left : 50,
+    right: 50,
+  },
+  logoutButtonText: {
+    fontSize: 16,
+    color: 'white',
+
+  },
 });
 
 export default Account;

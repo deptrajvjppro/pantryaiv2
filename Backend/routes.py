@@ -177,7 +177,7 @@ def search_pantry_item_by_name():
     else:
         return jsonify({'message': 'No pantry items found with that name'}), 404
 
-# http://127.0.0.1:5000/backend/get_pantry_items_by_user
+
 @backend.route('/get_pantry_items_by_user', methods=['GET'])
 def get_pantry_items_by_user():
     user_id = request.args.get('user_id')
@@ -200,3 +200,38 @@ def login_user():
     else:
         return jsonify({'error': 'Invalid credentials'}), 404
 
+
+@backend.route('/add_note', methods=['POST'])
+def add_note():
+    data = request.get_json()
+    if not all(key in data for key in ['user_id', 'content']):
+        return jsonify({'error': 'Missing data'}), 400
+    note = ShoppingNote(content=data['content'], user_id=data['user_id'])
+    db.session.add(note)
+    try:
+        db.session.commit()
+        return jsonify({'message': 'Note added successfully', 'note_id': note.id}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@backend.route('/get_notes', methods=['GET'])
+def get_notes():
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User ID parameter is required'}), 400
+    notes = ShoppingNote.query.filter_by(user_id=user_id).all()
+    return jsonify([{'id': note.id, 'content': note.content} for note in notes]), 200
+
+@backend.route('/delete_note', methods=['DELETE'])
+def delete_note():
+    note_id = request.args.get('note_id')
+    if not note_id:
+        return jsonify({'error': 'Note ID parameter is required'}), 400
+    note = ShoppingNote.query.get(note_id)
+    if note:
+        db.session.delete(note)
+        db.session.commit()
+        return jsonify({'message': 'Note deleted successfully'}), 200
+    else:
+        return jsonify({'message': 'No note found with that ID'}), 404
