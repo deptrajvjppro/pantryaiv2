@@ -10,14 +10,14 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { defaultStyle } from "@/constants/Styles";
-import { useUser } from "../context/UserContext"; 
+import { useUser } from "../context/UserContext";
 
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { setUserId } = useUser(); 
+  const { setUserId } = useUser();
   const handleLogin = async () => {
     const response = await fetch("http://127.0.0.1:5000/backend/loginUser", {
       method: "POST",
@@ -26,7 +26,7 @@ const Login = () => {
       },
       body: JSON.stringify({ email, password }),
     });
-    
+
     const result = await response.json();
     if (response.ok) {
       console.log("Login successful, user ID:", result['user_id']);
@@ -34,8 +34,8 @@ const Login = () => {
       router.push('/(tabs)/Index');
     } else {
       Alert.alert(
-        "Login failed",
-        "No user found with that email and password combination"
+          "Login failed",
+          "No user found with that email and password combination"
       );
     }
   };
@@ -59,39 +59,39 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("@/assets/images/logo.png")}
-        style={styles.logoStyle}
-      />
+      <View style={styles.container}>
+        <Image
+            source={require("@/assets/images/logo.png")}
+            style={styles.logoStyle}
+        />
 
-      <Text style={styles.inputLabel}>Enter Email Address</Text>
-      <TextInput
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        placeholderTextColor="black"
-        style={[defaultStyle.inputBox, { marginTop: 20 }]}
-      />
+        <Text style={styles.inputLabel}>Enter Email Address</Text>
+        <TextInput
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            placeholderTextColor="black"
+            style={[defaultStyle.inputBox, { marginTop: 20 }]}
+        />
 
-      <Text style={styles.inputLabel}>Enter Password</Text>
-      <TextInput
-        value={password}
-        onChangeText={setPassword}
-        autoCapitalize="none"
-        placeholderTextColor="black"
-        secureTextEntry
-        style={[defaultStyle.inputBox, { marginTop: 20 }]}
-      />
+        <Text style={styles.inputLabel}>Enter Password</Text>
+        <TextInput
+            value={password}
+            onChangeText={setPassword}
+            autoCapitalize="none"
+            placeholderTextColor="black"
+            secureTextEntry
+            style={[defaultStyle.inputBox, { marginTop: 20 }]}
+        />
 
-      <TouchableOpacity style={defaultStyle.loginButton} onPress={handleLogin }>
-        <Text style={styles.textBox}>Log in</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={defaultStyle.loginButton} onPress={handleLogin }>
+          <Text style={styles.textBox}>Log in</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={defaultStyle.loginButton} onPress={handleSignup}>
-        <Text style={styles.textBox}>Sign up</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={defaultStyle.loginButton} onPress={handleSignup}>
+          <Text style={styles.textBox}>Sign up</Text>
+        </TouchableOpacity>
+      </View>
   );
 };
 
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     width: 350,
     height: 100,
     marginTop:50
-  
+
   },
   textBox: {
     fontFamily: "mon-sb",

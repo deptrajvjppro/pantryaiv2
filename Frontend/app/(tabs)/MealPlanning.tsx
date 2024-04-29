@@ -22,7 +22,7 @@ const MealPlanning = () => {
   const sendMessage = async (message: string) => {
     setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Processing..." }]);
     try {
-      const response = await fetch("http://192.168.1.15:5000/chatbot", {
+      const response = await fetch("http://192.168.0.224:5000/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
@@ -48,7 +48,7 @@ const MealPlanning = () => {
       return;
     }
     try {
-      const response = await fetch(`http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}`);
+      const response = await fetch(`http://127.0.0.1:5000/backend/get_pantry_items_by_user?user_id=${user_id}`);
       const data = await response.json();
       if (response.ok) {
         setPantryItems(data);

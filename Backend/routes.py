@@ -1,23 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 from flask import jsonify, request, Blueprint
-from models import db, PantryItem
+from models import db, PantryItem, User, ShoppingNote, Recipe, Favorite
 import traceback
 from datetime import datetime
 import json
-backend = Blueprint('backend', __name__, url_prefix='/backend')
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-
-import logging
-from flask import jsonify, request, Blueprint
-from models import db, PantryItem
-import traceback
-from datetime import datetime
-import os
-import requests
 
 backend = Blueprint('backend', __name__, url_prefix='/backend')
 
