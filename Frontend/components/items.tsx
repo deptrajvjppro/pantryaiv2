@@ -8,14 +8,12 @@ import {
   TouchableOpacity,
   Button,
   TextInput,
-  Platform,
   Alert,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRoute } from '@react-navigation/native';
-import { useUser } from '../app/context/UserContext';
+import { useUser } from "../app/context/UserContext";
 interface Item {
   id: number;
   name: string;
@@ -24,70 +22,71 @@ interface Item {
 }
 const Items = () => {
   const [newItemName, setNewItemName] = useState("");
+  const [newItemID, setNewItemNameID] = useState("");
   const [newItemExpiryDate, setNewItemExpiryDate] = useState("");
   const [newItemQuantity, setNewItemQuantity] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
-  const route = useRoute();
-  const {user_id} = useUser();
+  const { user_id } = useUser();
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
 
   useEffect(() => {
-    if (user_id && user_id.user_id !== undefined) {
+    if (user_id && user_id !== undefined) {
       fetchItems();
     }
   }, [user_id]); // Depend on user_id.user_id to re-trigger the effect when it changes
 
-
   const fetchItems = async () => {
     // Ensure you have a valid user_id
-    if (!user_id || user_id.user_id === undefined) {
+    if (!user_id || user_id === undefined) {
       console.error("User ID is undefined or not properly set.");
       return; // Exit the function if user_id is not set
     }
 
     // Construct the URL with the correct user_id
-<<<<<<< HEAD
-    const url = `http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`;
-=======
-    const url = `http://10.0.0.201:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`;
->>>>>>> 59fd93aaf639eced5537dab9e57f7ccae7c7fc87
+    const url = `http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}`;
     try {
       const response = await fetch(url, {
-        method: 'GET', // Assuming GET is the correct method for your endpoint
+        method: "GET", // Assuming GET is the correct method for your endpoint
         headers: {
           "Content-Type": "application/json",
-        }
+        },
       });
       const items = await response.json();
       console.log("Current user_id object:", user_id);
-      console.log("Using user_id for fetch:", user_id ? user_id.user_id : "Not Set");
-
+      console.log("Using user_id for fetch:", user_id ? user_id : "Not Set");
       if (items && response.ok) {
         setItems(items);
       } else {
         throw new Error(items.message || "Error fetching items");
       }
-    } catch (error:any) {
+    } catch (error: any) {
       Alert.alert("Error", error.message || "Failed to fetch items");
     }
   };
 
-
   const deleteItem = async (itemId: number) => {
     try {
       const response = await fetch(
-        "http://192.168.1.15:5000/backend/delete_pantry_item",
+        `http://192.168.1.15:5000/backend/delete_pantry_item?item_id=${itemId}&user_id=${user_id}`, // Make sure the URL and parameters match your backend API requirements
         {
-          method: "DELETE",
+          method: "DELETE", // Use the DELETE HTTP method
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
-      if (response.ok) {
-        fetchItems(); // Refresh the list after deleting an item
+      if ( response.ok) {
+        // Option 1: Refetch the items list to update the UI
+        console.log("Deleted item with ID", itemId);
+        console.log("Delted item with ID", itemId ,"from user", user_id );
+        fetchItems();
+       
+       
       } else {
-        throw new Error("Error deleting item");
+        throw new Error("Failed to delete the item");
       }
     } catch (error: any) {
       Alert.alert("Error", error.message);
@@ -106,18 +105,17 @@ const Items = () => {
           body: JSON.stringify({
             name: newItemName,
             expiry_date: newItemExpiryDate,
-            user_id: 1, // Assuming user_id is 1
-            quantity: parseInt(newItemQuantity, 10)
+            quantity: parseInt(newItemQuantity, 10),
+            user_id: user_id,
           }),
         }
       );
       if (response.ok) {
         setModalVisible(false);
         fetchItems(); // Refresh the list after adding an item
-        console.log("Added item")
-        console.log (user_id + " added")
+        console.log("Added item to User :", user_id);
+     
       } else {
-        const errorData = await response.json();
         throw new Error("Error adding item");
       }
     } catch (error: any) {
@@ -152,23 +150,23 @@ const Items = () => {
       >
         <View style={styles.modalView}>
           <TextInput
-              style={styles.input}
-              placeholder="Item Name"
-              placeholderTextColor={"black"}
-              onChangeText={setNewItemName}  // This updates the state for newItemName
+            style={styles.input}
+            placeholder="Item Name"
+            placeholderTextColor={"black"}
+            onChangeText={setNewItemName} // This updates the state for newItemName
           />
           <TextInput
-              style={styles.input}
-              placeholder="Expiration date (YYYY/MM/DD)"
-              placeholderTextColor={"black"}
-              onChangeText={setNewItemExpiryDate}  // This updates the state for newItemExpiryDate
+            style={styles.input}
+            placeholder="Expiration date (YYYY/MM/DD)"
+            placeholderTextColor={"black"}
+            onChangeText={setNewItemExpiryDate} // This updates the state for newItemExpiryDate
           />
           <TextInput
-              keyboardType="numeric"
-              placeholderTextColor={"black"}
-              style={styles.input}
-              placeholder="Quantity"
-              onChangeText={(text) => setNewItemQuantity(text)}  // This updates the state for newItemQuantity
+            keyboardType="numeric"
+            placeholderTextColor={"black"}
+            style={styles.input}
+            placeholder="Quantity"
+            onChangeText={(text) => setNewItemQuantity(text)} // This updates the state for newItemQuantity
           />
           <View style={styles.addOrCancelArea}>
             <TouchableOpacity style={styles.checkStyle} onPress={addItem}>
