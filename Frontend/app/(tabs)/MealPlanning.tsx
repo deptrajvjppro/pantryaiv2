@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Switch, Modal  } from "react-native";
 import { useUser } from "../context/UserContext"; // Assuming this is the correct path to your context
+import Header from "@/components/header";
+import { Stack } from "expo-router";
+
 
 const MealPlanning = () => {
   const [chatHistory, setChatHistory] = useState([{ user: "", bot: "Hello, how may I assist you?" }]);
@@ -41,7 +44,7 @@ const MealPlanning = () => {
 
   const fetchPantryItems = async () => {
     if (!user_id) {
-      sendMessage("User ID is not set. Please log in.");
+      // sendMessage("User ID is not set. Please log in.");
       return;
     }
     try {
@@ -78,58 +81,64 @@ const MealPlanning = () => {
   };
   
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
-      <ScrollView style={styles.chatContainer}>
-        {chatHistory.map((chat, index) => (
-          <View key={index} style={styles.messageContainer}>
-            <Text style={styles.user}>User: <Text style={styles.userMessage}>{chat.user}</Text></Text>
-            <Text style={styles.botMessage}><Text style={styles.PantryAI}>PantryAI:</Text> {chat.bot}</Text>
-          </View>
-        ))}
-      </ScrollView>
-      <TextInput key={inputKey} value={userInput} onChangeText={setUserInput} style={styles.input} placeholder="Type your message here..." placeholderTextColor="gray" />
-      <TouchableOpacity onPress={() => sendMessage(userInput)} style={styles.sendButton}>
-          <Text style={styles.sendButtonText}>Send</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={handleGenerateRecipes} style={styles.SelectItemsButton}>
-        <Text style={styles.SelectItemsButtonText}>Select Items to Generate Recipes</Text>
-      </TouchableOpacity>
-
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>Select Items for Recipes</Text>
-          {pantryItems.map((item) => (
-            <View key={item.id} style={styles.item}>
-              <Text style={styles.itemText}>{item.name}</Text>          
-              <Switch
-                trackColor={{ false: "#767577", true: "#81b0ff" }}
-                thumbColor={selectedItems.has(item.id) ? "#f5dd4b" : "#f4f3f4"}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={() => toggleSelectItem(item.id)}
-                value={selectedItems.has(item.id)}
-              />
+    
+      <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <Stack.Screen
+        options={{
+          header: () => <Header />,
+        }}
+      />
+        <ScrollView style={styles.chatContainer}>
+          {chatHistory.map((chat, index) => (
+            <View key={index} style={styles.messageContainer}>
+              <Text style={styles.user}>User: <Text style={styles.userMessage}>{chat.user}</Text></Text>
+              <Text style={styles.botMessage}><Text style={styles.PantryAI}>PantryAI:</Text> {chat.bot}</Text>
             </View>
           ))}
-          <View style={styles.modalButtonContainer}>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
+        </ScrollView>
+        <TextInput key={inputKey} value={userInput} onChangeText={setUserInput} style={styles.input} placeholder="Type your message here..." placeholderTextColor="gray" />
+        <TouchableOpacity onPress={() => sendMessage(userInput)} style={styles.sendButton}>
+            <Text style={styles.sendButtonText}>Send</Text>
+        </TouchableOpacity>
 
-            <TouchableOpacity style={styles.GenerateRecipesButton} onPress={generateRecipesForSelectedItems}>
-              <Text style={styles.GenerateRecipesButtonText}>Generate Recipes</Text>
-            </TouchableOpacity>
+        <TouchableOpacity onPress={handleGenerateRecipes} style={styles.SelectItemsButton}>
+          <Text style={styles.SelectItemsButtonText}>Select Items to Generate Recipes</Text>
+        </TouchableOpacity>
+
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={isModalVisible}
+          onRequestClose={() => setIsModalVisible(false)}
+        >
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Select Items for Recipes</Text>
+            {pantryItems.map((item) => (
+              <View key={item.id} style={styles.item}>
+                <Text style={styles.itemText}>{item.name}</Text>          
+                <Switch
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={selectedItems.has(item.id) ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={() => toggleSelectItem(item.id)}
+                  value={selectedItems.has(item.id)}
+                />
+              </View>
+            ))}
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.GenerateRecipesButton} onPress={generateRecipesForSelectedItems}>
+                <Text style={styles.GenerateRecipesButtonText}>Generate Recipes</Text>
+              </TouchableOpacity>
+
+            </View>
 
           </View>
-
-        </View>
-      </Modal>
-    </KeyboardAvoidingView>
+        </Modal>
+      </KeyboardAvoidingView>
   );
 };
 
