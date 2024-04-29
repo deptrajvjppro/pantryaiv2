@@ -12,18 +12,22 @@ class User(db.Model):
     pantry_items = db.relationship('PantryItem', backref='user', lazy=True)
     favorites = db.relationship('Favorite', backref='user', lazy=True)
 
+
 class PantryItem(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(120), nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)  # Assuming default quantity as 1
     expiry_date = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    website_url = db.Column(db.String(255))  # URL field to store the website link
+
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(120), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
 
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

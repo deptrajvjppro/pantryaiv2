@@ -16,10 +16,10 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.secret_key = os.environ["APP_SECRET_KEY"]
     openai.api_key = os.environ["OPENAI_API_KEY"]
+    serphouse_api_key = os.environ.get("SERPHOUSE_API_KEY")  # Access the SerpHouse API key from environment variables
+
     app.register_blueprint(backend)
-
     db.init_app(app)
-
     CORS(app)
     logging.basicConfig(level=logging.DEBUG)
 

@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Button } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Switch, Modal  } from "react-native";
+import { useUser } from "../context/UserContext"; // Assuming this is the correct path to your context
 
 const MealPlanning = () => {
     const [chatHistory, setChatHistory] = useState([{ user: "", bot: "Hello, how may I assist you?" }]);
     const [userInput, setUserInput] = useState("");
     const [inputKey, setInputKey] = useState(Math.random().toString());
-    const [pantryItemNames, setPantryItemNames] = useState([]);
+    const { user_id } = useUser(); // Use the useUser hook to get the userId
+    const [pantryItems, setPantryItems] = useState([]);
+    const [selectedItems, setSelectedItems] = useState(new Set());
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const sendMessage = async (message) => {
+    useEffect(() => {
+        setChatHistory([{ user: "", bot: "Hello, how may I assist you?" }]);
+        fetchPantryItems();
+    }, [user_id]);
+
+    const sendMessage = async (message: string) => {
         setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Processing..." }]);
         try {
-            const response = await fetch("http://10.250.228.1:5000/chatbot", {
+            const response = await fetch("http://192.168.0.224:5000/chatbot", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message }),
@@ -30,66 +39,100 @@ const MealPlanning = () => {
         setUserInput("");
     };
 
-    const fetchPantryItemAndGenerateRecipe = async (user_id = 1) => {
+    const fetchPantryItems = async () => {
+        if (!user_id) {
+            sendMessage("User ID is not set. Please log in.");
+            return;
+        }
         try {
-            const response = await fetch(`http://127.0.0.1:5000/backend/get_pantry_items_by_user?user_id=${user_id}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const pantryItems = await response.json();
-            if (pantryItems.length > 0) {
-                const names = pantryItems.map(item => item.name);
-                setPantryItemNames(names);
-                sendMessage(`Generate recipe for ${names.join(", ")}`);
+            const response = await fetch(`http://127.0.0.1:5000/backend/get_pantry_items_by_user?user_id=${user_id.user_id}`);
+            const data = await response.json();
+            if (response.ok) {
+                setPantryItems(data);
             } else {
-                setPantryItemNames([]);
-                sendMessage("No pantry items found.");
+                throw new Error("Failed to fetch pantry items");
             }
         } catch (error) {
-            console.error("Fetch error:", error.message);
-            setPantryItemNames([]);
             sendMessage(`Fetch error: ${error.message}`);
         }
     };
 
+    const toggleSelectItem = (itemId) => {
+        const newSelectedItems = new Set(selectedItems);
+        if (newSelectedItems.has(itemId)) {
+            newSelectedItems.delete(itemId);
+        } else {
+            newSelectedItems.add(itemId);
+        }
+        setSelectedItems(newSelectedItems);
+    };
+
+    const handleGenerateRecipes = () => {
+        setIsModalVisible(true);
+    };
+
+    const generateRecipesForSelectedItems = () => {
+        setIsModalVisible(false);
+        const itemsToGenerateRecipesFor = pantryItems.filter(item => selectedItems.has(item.id));
+        sendMessage(`Generate recipes for: ${itemsToGenerateRecipesFor.map(item => item.name).join(", ")}`);
+    };
+
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-        >
-            <View style={styles.container}>
-                <ScrollView style={styles.chatContainer} contentContainerStyle={{ flexGrow: 1 }}>
-                    {chatHistory.map((chat, index) => (
-                        <View key={index} style={styles.messageContainer}>
-                            <Text style={styles.user}>User: <Text style={styles.userMessage}>{chat.user}</Text> </Text>
-                            <Text style={styles.botMessage}><Text style={styles.PantryAI}>PantryAI:</Text> {chat.bot}</Text>
+        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+            <ScrollView style={styles.chatContainer}>
+                {chatHistory.map((chat, index) => (
+                    <View key={index} style={styles.messageContainer}>
+                        <Text style={styles.user}>User: <Text style={styles.userMessage}>{chat.user}</Text></Text>
+                        <Text style={styles.botMessage}><Text style={styles.PantryAI}>PantryAI:</Text> {chat.bot}</Text>
+                    </View>
+                ))}
+            </ScrollView>
+            <TextInput key={inputKey} value={userInput} onChangeText={setUserInput} style={styles.input} placeholder="Type your message here..." placeholderTextColor="gray" />
+            <TouchableOpacity onPress={() => sendMessage(userInput)} style={styles.sendButton}>
+                <Text style={styles.sendButtonText}>Send</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={handleGenerateRecipes} style={styles.SelectItemsButton}>
+                <Text style={styles.SelectItemsButtonText}>Select Items to Generate Recipes</Text>
+            </TouchableOpacity>
+
+            <Modal
+                animationType="slide"
+                transparent={false}
+                visible={isModalVisible}
+                onRequestClose={() => setIsModalVisible(false)}
+            >
+                <View style={styles.modalView}>
+                    <Text style={styles.modalText}>Select Items for Recipes</Text>
+                    {pantryItems.map((item) => (
+                        <View key={item.id} style={styles.item}>
+                            <Text style={styles.itemText}>{item.name}</Text>
+                            <Switch
+                                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                                thumbColor={selectedItems.has(item.id) ? "#f5dd4b" : "#f4f3f4"}
+                                ios_backgroundColor="#3e3e3e"
+                                onValueChange={() => toggleSelectItem(item.id)}
+                                value={selectedItems.has(item.id)}
+                            />
                         </View>
                     ))}
-                    {/* {pantryItemNames.map((name, index) => (
-            <Text key={index}>{name}</Text>
-          ))} */}
-                </ScrollView>
-                <TextInput
-                    key={inputKey}
-                    value={userInput}
-                    onChangeText={setUserInput}
-                    style={styles.input}
-                    placeholder="Type your message here..."
-                    placeholderTextColor="gray"
-                />
-                <TouchableOpacity onPress={() => sendMessage(userInput)} style={styles.sendButton}>
-                    <Text style={styles.sendButtonText}>Send</Text>
-                </TouchableOpacity>
+                    <View style={styles.modalButtonContainer}>
+                        <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
+                            <Text style={styles.closeButtonText}>Close</Text>
+                        </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => fetchPantryItemAndGenerateRecipe(1)} style={styles.customButton}>
-                    <Text style={styles.customButtonText}>Generate Pantry Items</Text>
+                        <TouchableOpacity style={styles.GenerateRecipesButton} onPress={generateRecipesForSelectedItems}>
+                            <Text style={styles.GenerateRecipesButtonText}>Generate Recipes</Text>
+                        </TouchableOpacity>
 
-                </TouchableOpacity>
-            </View>
+                    </View>
+
+                </View>
+            </Modal>
         </KeyboardAvoidingView>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -99,6 +142,11 @@ const styles = StyleSheet.create({
     },
     chatContainer: {
         flex: 1,
+    },
+    pantryContainer: {
+        // flex: 1, // Adjust this as needed to allocate space for the pantry items
+        borderTopWidth: 1,
+        borderTopColor: '#ccc',
     },
     messageContainer: {
         marginBottom: 20,
@@ -143,10 +191,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 5,
+        margin: 5,
     },
     sendButtonText: {
         color: 'white',
         fontSize: 16,
+
     },
     customButton: {
         backgroundColor: '#007bff', // Blue background
@@ -158,6 +208,77 @@ const styles = StyleSheet.create({
     },
     customButtonText: {
         color: 'white', // White text
+        fontSize: 16,
+    },
+    SelectItemsButton: {
+        backgroundColor: 'green',
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+        margin: 5,
+
+    },
+
+    SelectItemsButtonText: {
+        color: 'white',
+        fontSize: 16,
+    },
+
+    modalView: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: 'black',
+        paddingTop: 50,
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 15,
+        color: 'white',
+    },
+    item: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+    itemText: {
+        color: 'white',
+    },
+    modalButtonContainer: {
+        flexDirection: 'row',
+        position: 'absolute',
+        bottom: 50,
+        left: 50,
+        right: 50,
+        justifyContent: 'space-between',
+    },
+    GenerateRecipesButton: {
+        marginTop: 10,
+        backgroundColor: '#007bff',
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 5,
+        marginLeft: 5,
+    },
+    GenerateRecipesButtonText: {
+        color: 'white',
+        fontSize: 16,
+    },
+    closeButton: {
+        backgroundColor: '#ff6347',  // Using a different color for distinction
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+        marginRight: 5,
+    },
+    closeButtonText: {
+        color: 'white',
         fontSize: 16,
     },
 

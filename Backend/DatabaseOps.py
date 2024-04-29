@@ -36,40 +36,12 @@ def login_user(email, password):
 # Example usages
 if __name__ == '__main__':
 
-    # USERS
-    print("Searching for user by email:")
-    search_user_by_email('john@example.com')
-
-    print("Adding a new user:")
-    add_user('Janice Doe', 'janice@example.com', 'secure123')
-
-    print("Searching for user by email:")
-    search_user_by_email('janice@example.com')
-
     # PANTRY ITEMS
     print("Adding a new pantry item:")
-    add_pantry_item('Green Beans', '2024-12-01', 1, 2)
+    print(add_pantry_item('Vanilla Ice Cream', '2024-12-01', 1, 2))
+
+    print("Searching for a pantry item by User ID:")
+    print(get_pantry_items_by_UID(1))
 
     print("Searching for a pantry item by User ID:")
     get_pantry_items_by_UID(1)
-
-    print("Deleting a pantry item by ID:")
-    delete_pantry_item(3)
-
-    print("Searching for a pantry item by User ID:")
-    get_pantry_items_by_UID(1)
-
-
-    # RECIPES
-    print("Searching for recipe by name:")
-    search_recipe_by_name('Spaghetti')
-
-    print("Adding a new recipe:")
-    add_recipe('French Toast', 'Mix eggs and milk, soak bread, and fry on pan.', 1)
-
-    print("Searching for recipe by name:")
-    search_recipe_by_name('French Toast')
-
-    print("Logging in user:")
-    user_info = login_user('janice@example.com', 'secure123')
-    print(user_info)
