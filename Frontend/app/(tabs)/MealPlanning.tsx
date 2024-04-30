@@ -21,9 +21,11 @@ const MealPlanning = () => {
     const unsubscribe = navigation.addListener('focus', () => {
       fetchPantryItems(); // Call your fetch method here
     });
+    setChatHistory([{ user: "", bot: "Hello, how may I assist you?" }]);
+    fetchPantryItems();
 
-    return unsubscribe; // Return the function to unsubscribe from the event so it gets removed on unmount
-  }, [navigation]);
+    return unsubscribe;
+  }, [user_id, navigation]);
 
   const sendMessage = async (message: string) => {
     setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Processing..." }]);
