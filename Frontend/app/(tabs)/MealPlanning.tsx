@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Keyboa
 import { useUser } from "../context/UserContext"; // Assuming this is the correct path to your context
 import Header from "@/components/header";
 import { Stack } from "expo-router";
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 
 
 const MealPlanning = () => {
@@ -13,16 +14,21 @@ const MealPlanning = () => {
   const [pantryItems, setPantryItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const navigation = useNavigation();
+  const isFocused = useIsFocused(); // This hook returns true if the screen is focused
 
   useEffect(() => {
-    setChatHistory([{ user: "", bot: "Hello, how may I assist you?" }]);
-    fetchPantryItems();
-  }, [user_id]);
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchPantryItems(); // Call your fetch method here
+    });
+
+    return unsubscribe; // Return the function to unsubscribe from the event so it gets removed on unmount
+  }, [navigation]);
 
   const sendMessage = async (message: string) => {
     setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Processing..." }]);
     try {
-      const response = await fetch("http://192.168.0.224:5000/chatbot", {
+      const response = await fetch("http://192.168.1.15:5000/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
@@ -48,7 +54,7 @@ const MealPlanning = () => {
       return;
     }
     try {
-      const response = await fetch(`http://127.0.0.1:5000/backend/get_pantry_items_by_user?user_id=${user_id}`);
+      const response = await fetch(`http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user_id}`);
       const data = await response.json();
       if (response.ok) {
         setPantryItems(data);
@@ -117,8 +123,8 @@ const MealPlanning = () => {
               <View key={item.id} style={styles.item}>
                 <Text style={styles.itemText}>{item.name}</Text>          
                 <Switch
-                  trackColor={{ false: "#767577", true: "#81b0ff" }}
-                  thumbColor={selectedItems.has(item.id) ? "#f5dd4b" : "#f4f3f4"}
+                  trackColor={{ false: "#767577", true: "white" }}
+                  thumbColor={selectedItems.has(item.id) ? "#007bff" : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"
                   onValueChange={() => toggleSelectItem(item.id)}
                   value={selectedItems.has(item.id)}
