@@ -99,10 +99,10 @@ const Login = () => {
       </TouchableOpacity>
 
 
-      <TouchableOpacity style={defaultStyle.loginButton} onPress={handleSignup}>
-        <Text style={styles.textBox}>Sign up</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={defaultStyle.loginButton} onPress={handleSignup}>
+          <Text style={styles.textBox}>Sign up</Text>
+        </TouchableOpacity>
+      </View>
   );
 };
 
@@ -143,6 +143,7 @@ const styles = StyleSheet.create({
     width: 350,
     height: 100,
     marginTop:50
+  
   },
   textBox: {
     fontFamily: "mon-sb",
@@ -155,6 +156,3 @@ const styles = StyleSheet.create({
 
 
 export default Login;
-
-
-

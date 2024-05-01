@@ -36,11 +36,12 @@ const MealPlanning = () => {
     const unsubscribe = navigation.addListener('focus', () => {
       fetchPantryItems(); // Call your fetch method here
     });
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchPantryItems(); // Call your fetch method here
+    });
     setChatHistory([{ user: "", bot: "Hello, how may I assist you?" }]);
     fetchPantryItems();
-
-    return unsubscribe;
-  }, [user, navigation]);
+  }, [user_id]);
 
   const sendMessage = async (message: string) => {
     setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Processing..." }]);
@@ -140,6 +141,8 @@ const MealPlanning = () => {
               <View key={item.id} style={styles.item}>
                 <Text style={styles.itemText}>{item.name}</Text>          
                 <Switch
+                  trackColor={{ false: "#767577", true: "white" }}
+                  thumbColor={selectedItems.has(item.id) ? "#007bff" : "#f4f3f4"}
                   trackColor={{ false: "#767577", true: "white" }}
                   thumbColor={selectedItems.has(item.id) ? "#007bff" : "#f4f3f4"}
                   ios_backgroundColor="#3e3e3e"

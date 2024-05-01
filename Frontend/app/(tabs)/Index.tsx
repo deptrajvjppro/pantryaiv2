@@ -16,36 +16,18 @@ import SearchBar from "@/components/searchbar";
 import Colors from "@/constants/Colors";
 
 
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import { useAuth } from "../context/AuthContext";
-
-
-interface Item {
-  id: number;
-  name: string;
-  quantity: number;
-  expiry_date?: string;
-  // ... any other properties of the item
-}
 const index = () => {
-  // CONSTANTS //
- 
-  const [newItemName, setNewItemName] = useState("");
-  const [newItemExpiryDate, setNewItemExpiryDate] = useState("");
-  const [newItemQuantity, setNewItemQuantity] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [items, setItems] = useState<Item[]>([]);
-  const {user} = useAuth();
+  const [items, setItems] = useState([]); // This will hold the list of items
+  const [searchTerm, setSearchTerm] = useState("");
 
 
-  // HANDLE SEARCH //
-  const handleSearch = useCallback(async (term: string) => {
-   
+  const handleSearch = useCallback(async (term:string) => {
+    setSearchTerm(term); // If you need to display the search term somewhere
+
+
     const url = `http://192.168.1.15:5000/backend/search_pantry_item_by_name?name=${encodeURIComponent(term)}`;
-    if (!term) {
-      fetchItems();
-      return;
-    }
+
+
     try {
       const response = await fetch(url, {
         method: 'GET',
@@ -62,127 +44,10 @@ const index = () => {
         setItems([]);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
-      setItems([]);
+      console.error('Error fetching search results:', error);
+      setItems([]); // Handle the error as needed
     }
-  }, [user]);
-
-
-  // FETCH ITEMS FROM THE DATA BASE
-  const fetchItems = async () => {
-    // If there's no user or user id is not provided
-    //IMPORTANT NOTE: We need to have a corner case everytime!!!!!!!!
-    if (!user || user.id === undefined) {
-      Alert.alert("Fetch error: No user or user id");
-      return; // Exit the function if user_id is not set
-    }
-
-
-    // Construct the URL with the correct user_id
-    const url = `http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user.id}`;
-    try {
-      const response = await fetch(url, {
-        method: "GET", // Assuming GET is the correct method for your endpoint
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const items = await response.json();
-      console.log("Current user_id object:", user.id);
-      console.log("Using user_id for fetch:", user.id ? user.id : "Not Set");
-      if (items && response.ok) {
-        setItems(items);
-      } else {
-        throw new Error(items.message || "Error fetching items");
-      }
-    } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to fetch items");
-    }
-  };
-
-
-  // DELTE THE ITEMS FROM THE DATA BASE
-  const deleteItem = async (itemId: number) => {
-    if (!user || user.id === undefined) {
-      console.error("User ID is undefined or not properly set.");
-      return; // Exit the function if user_id is not set
-    }
-    try {
-      const response = await fetch(
-        `http://192.168.1.15:5000/backend/delete_pantry_item?item_id=${itemId}&user_id=${user.id}`, // Make sure the URL and parameters match your backend API requirements
-        {
-          method: "DELETE", // Use the DELETE HTTP method
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        // Option 1: Refetch the items list to update the UI
-        console.log("Deleted item with ID", itemId);
-        console.log("Delted item with ID", itemId, "from user", user.id);
-        fetchItems();
-      } else {
-        throw new Error("Failed to delete the item");
-      }
-    } catch (error: any) {
-      Alert.alert("Error", error.message);
-    }
-  };
-
-
-  // ADD ITEMS TO THE DATA BASE
-  const addItem = async () => {
-    if (!user || user.id === undefined) {
-      Alert.alert("Error", "User not logged in or user data not available.");
-      return;
-    }
- 
-    try {
-      const response = await fetch(
-        "http://192.168.1.15:5000/backend/add_pantry_item",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: newItemName,
-            expiry_date: newItemExpiryDate,
-            quantity: parseInt(newItemQuantity, 10),
-            user_id: user.id,
-          }),
-        }
-      );
-      if (response.ok) {
-        setModalVisible(false);
-        fetchItems(); // Refresh the list after adding an item
-        console.log("Added item to User :", user.id);
-      } else {
-        throw new Error("Error adding item");
-      }
-    } catch (error: any) {
-      Alert.alert("Error", error.message);
-    }
-  };
-
-
-  // DYNAMICALLY UPDATE THE USER ID BASED ON THE USER LOG IN
-  useEffect(() => {
-    if (user && user.id !== undefined) {
-      fetchItems();
-    }
-    else {
-      console.log("Waiting for user data before fetching items.");
-    }
-  }, [user]); // Depend on user_id.user_id to re-trigger the effect when it changes
-
-
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
-
-
+  }, []);
   return (
     <View style={styles.container}>
       <Stack.Screen
@@ -190,68 +55,8 @@ const index = () => {
           header: () => <Header />,
         }}
       />
-      <SearchBar onSearch={handleSearch} />
-     
-      <View style={styles.container1}>
-        <Text style={styles.headerText}>List of all items</Text>
-        <FlatList
-          data={items}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              <Text>
-                {item.name} - Qty: {item.quantity}
-              </Text>
-              <Text>
-                {item.expiry_date}
-              </Text>
-              <Button title="Delete" onPress={() => deleteItem(item.id)} />
-            </View>
-          )}
-        />
-        <TouchableOpacity onPress={toggleModal} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Add New Item</Text>
-        </TouchableOpacity>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={toggleModal}
-        >
-          <View style={styles.modalView}>
-            <TextInput
-              style={styles.input}
-              placeholder="Item Name"
-              placeholderTextColor={"black"}
-              onChangeText={setNewItemName} // This updates the state for newItemName
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Expiration date (YYYY/MM/DD)"
-              placeholderTextColor={"black"}
-              onChangeText={setNewItemExpiryDate} // This updates the state for newItemExpiryDate
-            />
-            <TextInput
-              keyboardType="numeric"
-              placeholderTextColor={"black"}
-              style={styles.input}
-              placeholder="Quantity"
-              onChangeText={(text) => setNewItemQuantity(text)} // This updates the state for newItemQuantity
-            />
-            <View style={styles.addOrCancelArea}>
-              <TouchableOpacity style={styles.checkStyle} onPress={addItem}>
-                <FontAwesome name="check" size={50} color={Colors.primary} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.cancelStyle}
-                onPress={toggleModal}
-              >
-                <MaterialIcons name="cancel" size={50} color={Colors.primary} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-      </View>
+      <SearchBar onSearch={handleSearch}/>
+      <Items />
     </View>
   );
 };
@@ -262,16 +67,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 20,
-    alignItems: "center",
-  },
-  list: {
-    width: "100%",
-  },
+    alignItems:'center',
  
-  noResults: {
-    marginTop: 20,
-    fontSize: 18,
-    color: Colors.red,
   },
   text: {
     fontFamily: "mon-b",
@@ -421,6 +218,3 @@ const styles = StyleSheet.create({
 
 
 export default index;
-
-
-

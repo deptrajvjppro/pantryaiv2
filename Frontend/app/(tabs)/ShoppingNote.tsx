@@ -36,7 +36,7 @@ const ShoppingNote = () => {
   const addNote = async () => {
     if (input.trim() && user) {
       try {
-        const response = await fetch('http://192.168.1.15:5000/backend/add_note', {
+        const response = await fetch('http://127.0.0.1:5000/backend/add_note', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content: input.trim(), user_id: user }),
@@ -56,7 +56,7 @@ const ShoppingNote = () => {
 
   const deleteNote = async (noteId) => {
     try {
-      const response = await fetch(`http://192.168.1.15:5000/backend/delete_note?note_id=${noteId}`, {
+      const response = await fetch(`http://127.0.0.1:5000/backend/delete_note?note_id=${noteId}`, {
         method: 'DELETE',
       });
       if (response.ok) {
