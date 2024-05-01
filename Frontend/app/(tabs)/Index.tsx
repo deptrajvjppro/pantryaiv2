@@ -36,12 +36,13 @@ const index = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
   const {user} = useAuth();
+  const serverUrl = 'http://127.0.0.1:5000'
 
 
   // HANDLE SEARCH //
   const handleSearch = useCallback(async (term: string) => {
-   
-    const url = `http://192.168.1.15:5000/backend/search_pantry_item_by_name?name=${encodeURIComponent(term)}`;
+
+    const url = serverUrl + `/backend/search_pantry_item_by_name?name=${encodeURIComponent(term)}`;
     if (!term) {
       fetchItems();
       return;
@@ -79,7 +80,7 @@ const index = () => {
 
 
     // Construct the URL with the correct user_id
-    const url = `http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user.id}`;
+    const url = serverUrl + `/backend/get_pantry_items_by_user?user_id=${user.id}`;
     try {
       const response = await fetch(url, {
         method: "GET", // Assuming GET is the correct method for your endpoint
@@ -109,7 +110,7 @@ const index = () => {
     }
     try {
       const response = await fetch(
-        `http://192.168.1.15:5000/backend/delete_pantry_item?item_id=${itemId}&user_id=${user.id}`, // Make sure the URL and parameters match your backend API requirements
+          serverUrl + `/backend/delete_pantry_item?item_id=${itemId}&user_id=${user.id}`, // Make sure the URL and parameters match your backend API requirements
         {
           method: "DELETE", // Use the DELETE HTTP method
           headers: {
@@ -140,7 +141,7 @@ const index = () => {
  
     try {
       const response = await fetch(
-        "http://192.168.1.15:5000/backend/add_pantry_item",
+          serverUrl + "/backend/add_pantry_item",
         {
           method: "POST",
           headers: {

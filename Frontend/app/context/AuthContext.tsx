@@ -20,6 +20,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const serverUrl = 'http://127.0.0.1:5000'
  
   // Function to load user from secure storage and convert to a number
   const loadUser = async () => {
@@ -36,7 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Handle user login and save the id as a string in SecureStore
   const login = async (email: string, password: string) => {
-    const response = await fetch('http://192.168.1.15:5000/backend/loginUser', {
+    const response = await fetch(serverUrl + '/backend/loginUser', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

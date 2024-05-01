@@ -8,7 +8,9 @@ import { useAuth } from "../context/AuthContext";
 const ShoppingNote = () => {
   const [notes, setNotes] = useState([]);
   const [input, setInput] = useState('');
+  const serverUrl = 'http://127.0.0.1:5000'
   const { user } = useAuth();
+
 
   useEffect(() => {
     fetchNotes();
@@ -20,7 +22,7 @@ const ShoppingNote = () => {
       return;
     }
       try {
-        const response = await fetch(`http://192.168.1.15:5000/backend/get_notes?user_id=${user.id}`);
+        const response = await fetch(serverUrl + `/get_notes?user_id=${user.id}`);
         const data = await response.json();
         if (response.ok) {
           setNotes(data);
@@ -36,7 +38,7 @@ const ShoppingNote = () => {
   const addNote = async () => {
     if (input.trim() && user) {
       try {
-        const response = await fetch('http://192.168.1.15:5000/backend/add_note', {
+        const response = await fetch(serverUrl + '/backend/add_note', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content: input.trim(), user_id: user.id }),
@@ -58,7 +60,7 @@ const ShoppingNote = () => {
 
   const deleteNote = async (noteId: number) => {
     try {
-      const response = await fetch(`http://192.168.1.15:5000/backend/delete_note?note_id=${noteId}`, {
+      const response = await fetch(serverUrl + `/backend/delete_note?note_id=${noteId}`, {
         method: 'DELETE',
       });
       if (response.ok) {

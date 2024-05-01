@@ -22,6 +22,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const { login , user } = useAuth();
   const router = useRouter();
+  const serverUrl = 'http://127.0.0.1:5000'
 
 
   const handleLogin = async () => {
@@ -40,7 +41,7 @@ const Login = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await fetch("http://192.168.1.15:5000/backend/add_user", {
+      const response = await fetch(serverUrl + "/backend/add_user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

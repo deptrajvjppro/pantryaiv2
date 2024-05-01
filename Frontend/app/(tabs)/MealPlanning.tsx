@@ -23,6 +23,7 @@ const MealPlanning = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { user } = useAuth();
   const navigation = useNavigation();
+  const serverUrl = 'http://127.0.0.1:5000'
 
   // useEffect(() => {
   //   const unsubscribe = navigation.addListener('focus', () => {
@@ -71,7 +72,7 @@ const MealPlanning = () => {
       return;
     }
     try {
-      const response = await fetch(`http://192.168.1.15:5000/backend/get_pantry_items_by_user?user_id=${user.id}`);
+      const response = await fetch(serverUrl + `/backend/get_pantry_items_by_user?user_id=${user.id}`);
       const data = await response.json();
       if (response.ok) {
         setPantryItems(data);
