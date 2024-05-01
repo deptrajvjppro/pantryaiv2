@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,29 +9,41 @@ import {
   FlatList,
   Modal,
 } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import Header from "@/components/header";
 import SearchBar from "@/components/searchbar";
 import Colors from "@/constants/Colors";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { Image } from "expo-image";
+
+
+import { FontAwesome, MaterialIcons,Entypo  } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
-import { useServerUrl } from "../context/ServerUrlContext";  // Make sure the path is correct
+import {useServerUrl} from "@/app/context/ServerUrlContext";
+
 
 interface Item {
   id: number;
   name: string;
   quantity: number;
   expiry_date?: string;
+  website_url?: string;
+  // ... any other properties of the item
 }
+const index = () => {
+  // CONSTANTS //
 
-const Index = () => {
+
   const [newItemName, setNewItemName] = useState("");
   const [newItemExpiryDate, setNewItemExpiryDate] = useState("");
   const [newItemQuantity, setNewItemQuantity] = useState("");
+  const [newItemImageWbsiteURL, setNewItemItemImageWebsiteURL] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
   const { user } = useAuth();
-  const serverUrl = useServerUrl();  // Using the server URL from the context
+  const [editMode, setEditMode] = useState(false);
+  const [editableItem, setEditableItem] = useState<Item | null>(null);
+  const serverUrl = useServerUrl()
 
   const handleSearch = useCallback(async (term: string) => {
     const url = `${serverUrl}/backend/search_pantry_item_by_name?name=${encodeURIComponent(term)}`;
@@ -115,6 +126,7 @@ const Index = () => {
           expiry_date: newItemExpiryDate,
           quantity: parseInt(newItemQuantity, 10),
           user_id: user.id,
+          website_url: newItemImageWbsiteURL,
         }),
       });
       if (response.ok) {
@@ -141,91 +153,118 @@ const Index = () => {
   };
 
 
-return (
-    <View style={styles.container}>
-      <Stack.Screen
-        options={{
-          header: () => <Header />,
-        }}
-      />
-      <SearchBar onSearch={handleSearch} />
-     
-      <View style={styles.container1}>
-        <Text style={styles.headerText}>List of all items</Text>
-        <FlatList
-          data={items}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              <Text>
-                {item.name} - Qty: {item.quantity}
-              </Text>
-              <Text>
-                {item.expiry_date}
-              </Text>
-              <Button title="Delete" onPress={() => deleteItem(item.id)} />
-            </View>
-          )}
+  return (
+      <View style={styles.container}>
+        <Stack.Screen
+            options={{
+              header: () => <Header />,
+            }}
         />
-        <TouchableOpacity onPress={toggleModal} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Add New Item</Text>
-        </TouchableOpacity>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={toggleModal}
-        >
-          <View style={styles.modalView}>
-            <TextInput
-              style={styles.input}
-              placeholder="Item Name"
-              placeholderTextColor={"black"}
-              onChangeText={setNewItemName} // This updates the state for newItemName
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Expiration date (YYYY/MM/DD)"
-              placeholderTextColor={"black"}
-              onChangeText={setNewItemExpiryDate} // This updates the state for newItemExpiryDate
-            />
-            <TextInput
-              keyboardType="numeric"
-              placeholderTextColor={"black"}
-              style={styles.input}
-              placeholder="Quantity"
-              onChangeText={(text) => setNewItemQuantity(text)} // This updates the state for newItemQuantity
-            />
-            <View style={styles.addOrCancelArea}>
-              <TouchableOpacity style={styles.checkStyle} onPress={addItem}>
-                <FontAwesome name="check" size={50} color={Colors.primary} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.cancelStyle}
-                onPress={toggleModal}
-              >
-                <MaterialIcons name="cancel" size={50} color={Colors.primary} />
-              </TouchableOpacity>
+        <SearchBar onSearch={handleSearch} />
+
+
+        <View style={styles.container1}>
+          <Text style={styles.headerText}>List of all items</Text>
+          <FlatList
+              data={items}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                  <View style={styles.item}>
+                    <Image source={item.website_url} style={styles.imageHolder} />
+                    <View>
+                      <Text style={styles.text}>{item.name}</Text>
+                      <Text style={styles.textNormal}>Qty: {item.quantity}</Text>
+                      <Text style={styles.textNormal}>{item.expiry_date}</Text>
+                    </View>
+                    <TouchableOpacity
+                        style={styles.menuButton}
+                    >
+                      <Entypo name="dots-three-horizontal" size={24} color="black" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.deleteButton}
+                        onPress={() => deleteItem(item.id)}
+                    >
+                      <FontAwesome name="trash-o" size={24} color="black" />
+                    </TouchableOpacity>
+                  </View>
+              )}
+          />
+          <TouchableOpacity onPress={toggleModal} style={styles.addButton}>
+            <Text style={styles.addButtonText}>Add New Item</Text>
+          </TouchableOpacity>
+          <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={toggleModal}
+          >
+            <View style={styles.modalView}>
+              <TextInput
+                  style={styles.input}
+                  placeholder="Item Name"
+                  placeholderTextColor={"black"}
+                  onChangeText={setNewItemName} // This updates the state for newItemName
+              />
+              <TextInput
+                  style={styles.input}
+                  placeholder="Expiration date (YYYY/MM/DD)"
+                  placeholderTextColor={"black"}
+                  onChangeText={setNewItemExpiryDate} // This updates the state for newItemExpiryDate
+              />
+              <TextInput
+                  keyboardType="numeric"
+                  placeholderTextColor={"black"}
+                  style={styles.input}
+                  placeholder="Quantity"
+                  onChangeText={(text) => setNewItemQuantity(text)} // This updates the state for newItemQuantity
+              />
+              <View style={styles.addOrCancelArea}>
+                <TouchableOpacity style={styles.checkStyle} onPress={addItem}>
+                  <FontAwesome name="check" size={50} color={Colors.primary} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.cancelStyle}
+                    onPress={toggleModal}
+                >
+                  <MaterialIcons name="cancel" size={50} color={Colors.primary} />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
+        </View>
       </View>
-    </View>
   );
 };
 
 
 const styles = StyleSheet.create({
+  menuButton: {
+    padding: 10,
+    position:'absolute',
+    top: 10,
+    right: 15, // Adjust padding for easier tapping
+  },
   tabContainer: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 20,
     alignItems: "center",
   },
+  deleteButton: {
+    position: "absolute",
+    bottom: 10,
+    right: 15,
+  },
   list: {
     width: "100%",
   },
- 
+  imageHolder: {
+    width: 70,
+    height: 70,
+    alignSelf: "center",
+    borderRadius: 5,
+  },
   noResults: {
     marginTop: 20,
     fontSize: 18,
@@ -233,10 +272,13 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "mon-b",
-    textAlign: "center",
-
-
-    marginTop: 5,
+    fontSize: 18,
+    marginLeft: 15,
+  },
+  textNormal: {
+    fontFamily: "mon",
+    fontSize: 15,
+    marginLeft: 15,
   },
   textInActive: {
     color: Colors.lessgrey,
@@ -371,10 +413,15 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     alignSelf: "center",
+    flexDirection: "row",
   },
   title: {
     fontSize: 32,
   },
 });
 
-export default Index;
+
+export default index;
+
+
+

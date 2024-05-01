@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert 
 import { Stack } from "expo-router";
 import Header from "@/components/header";
 import { useAuth } from "../context/AuthContext";
-import { useServerUrl } from "../context/ServerUrlContext"; // Make sure the path is correct
+import { useServerUrl } from "../context/ServerUrlContext"; // Import the useServerUrl hook
 
 const ShoppingNote = () => {
   const [notes, setNotes] = useState([]);
   const [input, setInput] = useState('');
-  const serverUrl = useServerUrl();  // Using the server URL from the context
   const { user } = useAuth();
+  const serverUrl = useServerUrl(); // Use the serverUrl from the context
 
   useEffect(() => {
     fetchNotes();
@@ -21,7 +21,7 @@ const ShoppingNote = () => {
       return;
     }
     try {
-      const response = await fetch(`${serverUrl}/get_notes?user_id=${user.id}`);
+      const response = await fetch(`${serverUrl}/backend/get_notes?user_id=${user.id}`);
       const data = await response.json();
       if (response.ok) {
         setNotes(data);
@@ -56,7 +56,7 @@ const ShoppingNote = () => {
     }
   };
 
-  const deleteNote = async (noteId) => {
+  const deleteNote = async (noteId: number) => {
     try {
       const response = await fetch(`${serverUrl}/backend/delete_note?note_id=${noteId}`, {
         method: 'DELETE',
@@ -72,7 +72,6 @@ const ShoppingNote = () => {
     }
   };
 
-  // Render the component UI
   return (
       <View style={styles.container}>
         <Stack.Screen
@@ -124,6 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+
   },
   noteText: {
     fontSize: 16,
