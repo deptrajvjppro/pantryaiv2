@@ -27,7 +27,7 @@ const ShoppingNote = () => {
         } else {
           throw new Error(data.error || 'Failed to fetch notes');
         }
-      } catch (error) {
+      } catch (error : any) {
         Alert.alert('Error', error.message);
       }
     
@@ -36,7 +36,7 @@ const ShoppingNote = () => {
   const addNote = async () => {
     if (input.trim() && user) {
       try {
-        const response = await fetch('http://127.0.0.1:5000/backend/add_note', {
+        const response = await fetch('http://192.168.1.15:5000/backend/add_note', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ content: input.trim(), user_id: user }),
@@ -48,15 +48,15 @@ const ShoppingNote = () => {
         } else {
           throw new Error(data.error || 'Failed to add note');
         }
-      } catch (error) {
+      } catch (error : any) {
         Alert.alert('Error', error.message);
       }
     }
   };
 
-  const deleteNote = async (noteId) => {
+  const deleteNote = async (noteId: number) => {
     try {
-      const response = await fetch(`http://127.0.0.1:5000/backend/delete_note?note_id=${noteId}`, {
+      const response = await fetch(`http://192.168.1.15:5000/backend/delete_note?note_id=${noteId}`, {
         method: 'DELETE',
       });
       if (response.ok) {
@@ -65,7 +65,7 @@ const ShoppingNote = () => {
         const data = await response.json();
         throw new Error(data.error || 'Failed to delete note');
       }
-    } catch (error) {
+    } catch (error : any) {
       Alert.alert('Error', error.message);
     }
   };
