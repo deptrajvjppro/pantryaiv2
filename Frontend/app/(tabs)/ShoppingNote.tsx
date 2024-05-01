@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { useUser } from '../context/UserContext';
 import { Stack } from "expo-router";
 import Header from "@/components/header";
+import { useAuth } from "../context/AuthContext";
+
 
 const ShoppingNote = () => {
   const [notes, setNotes] = useState([]);
   const [input, setInput] = useState('');
-  const { user_id } = useUser();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchNotes();
-  }, [user_id]);
+  }, [user]);
 
   const fetchNotes = async () => {
-    if (user_id) {
+    if (!user || user.id === undefined) {
+      console.log("User ID is not set. Please log in.");
+      return;
+    }
       try {
-        const response = await fetch(`http://192.168.1.15:5000/backend/get_notes?user_id=${user_id}`);
+        const response = await fetch(`http://192.168.1.15:5000/backend/get_notes?user_id=${user.id}`);
         const data = await response.json();
         if (response.ok) {
           setNotes(data);
@@ -26,16 +30,16 @@ const ShoppingNote = () => {
       } catch (error) {
         Alert.alert('Error', error.message);
       }
-    }
+    
   };
 
   const addNote = async () => {
-    if (input.trim() && user_id) {
+    if (input.trim() && user) {
       try {
         const response = await fetch('http://192.168.1.15:5000/backend/add_note', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: input.trim(), user_id: user_id }),
+          body: JSON.stringify({ content: input.trim(), user_id: user }),
         });
         const data = await response.json();
         if (response.ok) {
@@ -74,7 +78,7 @@ const ShoppingNote = () => {
           header: () => <Header />,
         }}
       />
-      <Text style={styles.header}>Shopping Notes</Text>
+      {/* <Text style={styles.header}>Shopping Notes</Text>
       <ScrollView>
         {notes.map((note) => (
           <View key={note.id} style={styles.noteItem}>
@@ -95,7 +99,7 @@ const ShoppingNote = () => {
       />
       <TouchableOpacity onPress={addNote} style={styles.addButton}>
         <Text style={styles.addButtonText}>Add Note</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

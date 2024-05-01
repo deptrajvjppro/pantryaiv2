@@ -8,5 +8,6 @@ export default {
   background:'#000000',
   secondary:"#ffffff",
   shadowColor:"#373737",
-  lessgrey: "#7d7d7d"
+  lessgrey: "#7d7d7d",
+  red: "#e72727",
 };

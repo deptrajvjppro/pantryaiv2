@@ -8,55 +8,62 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { useRouter } from "expo-router";
+
+
 import { defaultStyle } from "@/constants/Styles";
-import { useUser } from "../context/UserContext"; 
+
+
+import { useAuth } from "../context/AuthContext";
+import { useRouter } from "expo-router";
 
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { login , user } = useAuth();
   const router = useRouter();
-  const { setUserId } = useUser(); 
+
+
   const handleLogin = async () => {
-    const response = await fetch("http://127.0.0.1:5000/backend/loginUser", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    
-    const result = await response.json();
-    if (response.ok) {
-      console.log("Login successful, user ID:", result['user_id']);
-      setUserId(result['user_id']);  // Make sure this is the user_id and not an object
-      router.push('/(tabs)/Index');
-    } else {
-      Alert.alert(
-        "Login failed",
-        "No user found with that email and password combination"
-      );
+    try {
+      await login(email, password);
+      if(user){
+        router.navigate('/(tabs)/Index');
+      }
+     
+    } catch (error) {
+      // If error is an instance of Error, it will have a message. Otherwise, it's an unknown error.
+      Alert.alert("Login Error", error instanceof Error ? error.message : "An unknown error occurred");
     }
   };
+
 
   const handleSignup = async () => {
-    const response = await fetch("http://127.0.0.1:5000/backend/add_user", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch("http://192.168.1.15:5000/backend/add_user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const id = await response.json();
-    if (id) {
-      console.log("Signup successful, new user ID:", id);
-      // Redirect or perform further actions
-    } else {
-      Alert.alert("Signup failed", id.error || "Could not create user");
+
+      const result = await response.json();
+      if (response.ok) {
+        console.log("Signup successful, new user ID:", result.id);
+        // Optionally, log in the user automatically after sign up
+        await login(email, password);
+       
+      } else {
+        Alert.alert("Signup failed", result.error || "Could not create user");
+      }
+    } catch (error) {
+      // If error is an instance of Error, it will have a message. Otherwise, it's an unknown error.
+      Alert.alert("Signup Error", error instanceof Error ? error.message : "An unknown error occurred");
     }
   };
+
 
   return (
     <View style={styles.container}>
@@ -65,14 +72,16 @@ const Login = () => {
         style={styles.logoStyle}
       />
 
+
       <Text style={styles.inputLabel}>Enter Email Address</Text>
       <TextInput
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         placeholderTextColor="black"
-        style={[defaultStyle.inputBox, { marginTop: 20 }]}
+        style={[styles.inputBox, { marginTop: 20 }]}
       />
+
 
       <Text style={styles.inputLabel}>Enter Password</Text>
       <TextInput
@@ -81,12 +90,14 @@ const Login = () => {
         autoCapitalize="none"
         placeholderTextColor="black"
         secureTextEntry
-        style={[defaultStyle.inputBox, { marginTop: 20 }]}
+        style={[styles.inputBox, { marginTop: 20 }]}
       />
+
 
       <TouchableOpacity style={defaultStyle.loginButton} onPress={handleLogin }>
         <Text style={styles.textBox}>Log in</Text>
       </TouchableOpacity>
+
 
       <TouchableOpacity style={defaultStyle.loginButton} onPress={handleSignup}>
         <Text style={styles.textBox}>Sign up</Text>
@@ -95,16 +106,26 @@ const Login = () => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
     flexDirection: 'column',
   },
+  inputBox:{
+    borderWidth: 0.7,
+    height: 35,
+    width: 350,
+    alignSelf: "center",
+    borderRadius: 5,
+    borderColor: "black",
+    padding: 10
+  },
   inputLabel: {
     left: 30,
     fontSize: 15,
-    marginTop: 20,
+    fontFamily: "mon-b"
   },
   textStyle: {
     fontFamily: "mon-sb",
@@ -122,7 +143,6 @@ const styles = StyleSheet.create({
     width: 350,
     height: 100,
     marginTop:50
-  
   },
   textBox: {
     fontFamily: "mon-sb",
@@ -130,17 +150,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
   },
-  continueButton: {
-    height: 55,
-    width: 350,
-    borderWidth: 1.1,
-    backgroundColor: "white",
-    borderColor: "black",
-    justifyContent: "center",
-    borderRadius: 7,
-    marginTop: 20,
-    alignSelf: "center",
-  },
+ 
 });
 
+
 export default Login;
+
+
+

@@ -36,7 +36,7 @@ const Layout = () => {
                 }}
             />
             
-            <Tabs.Screen 
+            {/* <Tabs.Screen 
                 name = 'Notifications'
                 
                 options = {{
@@ -45,7 +45,7 @@ const Layout = () => {
                     <Entypo name="bell" size={20} color= {color} />,
                     
                 }}
-            />
+            /> */}
 
             <Tabs.Screen 
                 name = 'MealPlanning' 
