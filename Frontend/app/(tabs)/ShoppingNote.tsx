@@ -30,7 +30,7 @@ const ShoppingNote = () => {
       } catch (error : any) {
         Alert.alert('Error', error.message);
       }
-    
+     
   };
 
   const addNote = async () => {
@@ -39,7 +39,7 @@ const ShoppingNote = () => {
         const response = await fetch('http://192.168.1.15:5000/backend/add_note', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ content: input.trim(), user_id: user }),
+          body: JSON.stringify({ content: input.trim(), user_id: user.id }),
         });
         const data = await response.json();
         if (response.ok) {
@@ -51,6 +51,8 @@ const ShoppingNote = () => {
       } catch (error : any) {
         Alert.alert('Error', error.message);
       }
+    } else {
+      Alert.alert('Input Error', 'Please enter a note or check login status');
     }
   };
 
@@ -78,7 +80,7 @@ const ShoppingNote = () => {
           header: () => <Header />,
         }}
       />
-      {/* <Text style={styles.header}>Shopping Notes</Text>
+      <Text style={styles.header}>Shopping Notes</Text>
       <ScrollView>
         {notes.map((note) => (
           <View key={note.id} style={styles.noteItem}>
@@ -99,7 +101,7 @@ const ShoppingNote = () => {
       />
       <TouchableOpacity onPress={addNote} style={styles.addButton}>
         <Text style={styles.addButtonText}>Add Note</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </View>
   );
 };
