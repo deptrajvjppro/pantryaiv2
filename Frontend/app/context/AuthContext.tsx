@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { useRouter } from "expo-router";
+import { useServerUrl } from '../context/ServerUrlContext'; // Make sure the path is correct
+
 interface User {
   id: number | null; // The id is a number within your app
 }
-
 
 interface AuthContextType {
   user: User | null;
@@ -13,15 +14,13 @@ interface AuthContextType {
   logout: () => void;
 }
 
-
 const AuthContext = createContext<AuthContextType | null>(null);
-
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const serverUrl = 'http://127.0.0.1:5000'
- 
+  const serverUrl = useServerUrl();  // Fetch the server URL from the context
+
   // Function to load user from secure storage and convert to a number
   const loadUser = async () => {
     const userIdString = await SecureStore.getItemAsync('userId');
@@ -34,10 +33,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoaded(true);
   };
 
-
   // Handle user login and save the id as a string in SecureStore
   const login = async (email: string, password: string) => {
-    const response = await fetch(serverUrl + '/backend/loginUser', {
+    const response = await fetch(`${serverUrl}/backend/loginUser`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,12 +47,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const userId = result.user_id;
       await SecureStore.setItemAsync('userId', String(userId));
       setUser({ id: userId });
- 
     } else {
       throw new Error(result.error || 'Login failed');
     }
   };
-
 
   // Handle user logout
   const logout = async () => {
@@ -62,19 +58,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
-
   useEffect(() => {
     loadUser();
   }, []);
 
-
   return (
-    <AuthContext.Provider value={{ user, isLoaded, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+      <AuthContext.Provider value={{ user, isLoaded, login, logout }}>
+        {children}
+      </AuthContext.Provider>
   );
 };
-
 
 // Custom hook to use the auth context
 export const useAuth = () => {
@@ -84,8 +77,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-
-
-
-

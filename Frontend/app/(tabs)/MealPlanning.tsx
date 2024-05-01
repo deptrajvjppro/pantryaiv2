@@ -1,18 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Switch, Modal  } from "react-native";
 import Header from "@/components/header";
 import { Stack } from "expo-router";
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from "../context/AuthContext";
-
-
-interface Item {
-  id: number;
-  name: string;
-  quantity: number;
-  expiry_date?: string;
-  // ... any other properties of the item
-}
+import { useServerUrl } from "../context/ServerUrlContext"; // Make sure the path is correct
 
 const MealPlanning = () => {
   const [chatHistory, setChatHistory] = useState([{ user: "", bot: "Hello, how may I assist you?" }]);
@@ -23,15 +15,7 @@ const MealPlanning = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { user } = useAuth();
   const navigation = useNavigation();
-  const serverUrl = 'http://127.0.0.1:5000'
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     fetchPantryItems(); // Call your fetch method here
-  //   });
-
-  //   return unsubscribe; // Return the function to unsubscribe from the event so it gets removed on unmount
-  // }, [navigation]);
+  const serverUrl = useServerUrl();  // Using the server URL from the context
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -46,7 +30,7 @@ const MealPlanning = () => {
   const sendMessage = async (message: string) => {
     setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Processing..." }]);
     try {
-      const response = await fetch("http://192.168.1.15:5000/chatbot", {
+      const response = await fetch(`${serverUrl}/chatbot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message }),
@@ -59,7 +43,7 @@ const MealPlanning = () => {
         console.error("Fetch error:", response.statusText);
         setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Error: Could not fetch response." }]);
       }
-    } catch (error : any) {
+    } catch (error) {
       console.error("Fetch error:", error.message);
       setChatHistory(prevHistory => [...prevHistory, { user: message, bot: "Exception: Could not fetch response." }]);
     }
@@ -72,19 +56,19 @@ const MealPlanning = () => {
       return;
     }
     try {
-      const response = await fetch(serverUrl + `/backend/get_pantry_items_by_user?user_id=${user.id}`);
+      const response = await fetch(`${serverUrl}/backend/get_pantry_items_by_user?user_id=${user.id}`);
       const data = await response.json();
       if (response.ok) {
         setPantryItems(data);
       } else {
         throw new Error("Failed to fetch pantry items");
       }
-    } catch (error : any) {
+    } catch (error) {
       sendMessage(`Fetch error: ${error.message}`);
     }
   };
 
-  const toggleSelectItem = (itemId : number) => {
+  const toggleSelectItem = (itemId) => {
     const newSelectedItems = new Set(selectedItems);
     if (newSelectedItems.has(itemId)) {
       newSelectedItems.delete(itemId);
@@ -103,26 +87,25 @@ const MealPlanning = () => {
     const itemsToGenerateRecipesFor = pantryItems.filter(item => selectedItems.has(item.id));
     sendMessage(`Generate recipes for: ${itemsToGenerateRecipesFor.map(item => item.name).join(", ")}`);
   };
-  
+
   return (
-    
       <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <Stack.Screen
-        options={{
-          header: () => <Header />,
-        }}
-      />
+            options={{
+              header: () => <Header />,
+            }}
+        />
         <ScrollView style={styles.chatContainer}>
           {chatHistory.map((chat, index) => (
-            <View key={index} style={styles.messageContainer}>
-              <Text style={styles.user}>User: <Text style={styles.userMessage}>{chat.user}</Text></Text>
-              <Text style={styles.botMessage}><Text style={styles.PantryAI}>PantryAI:</Text> {chat.bot}</Text>
-            </View>
+              <View key={index} style={styles.messageContainer}>
+                <Text style={styles.user}>User: <Text style={styles.userMessage}>{chat.user}</Text></Text>
+                <Text style={styles.botMessage}><Text style={styles.PantryAI}>PantryAI:</Text> {chat.bot}</Text>
+              </View>
           ))}
         </ScrollView>
         <TextInput key={inputKey} value={userInput} onChangeText={setUserInput} style={styles.input} placeholder="Type your message here..." placeholderTextColor="gray" />
         <TouchableOpacity onPress={() => sendMessage(userInput)} style={styles.sendButton}>
-            <Text style={styles.sendButtonText}>Send</Text>
+          <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleGenerateRecipes} style={styles.SelectItemsButton}>
@@ -130,26 +113,24 @@ const MealPlanning = () => {
         </TouchableOpacity>
 
         <Modal
-          animationType="slide"
-          transparent={false}
-          visible={isModalVisible}
-          onRequestClose={() => setIsModalVisible(false)}
+            animationType="slide"
+            transparent={false}
+            visible={isModalVisible}
+            onRequestClose={() => setIsModalVisible(false)}
         >
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Select Items for Recipes</Text>
             {pantryItems.map((item) => (
-              <View key={item.id} style={styles.item}>
-                <Text style={styles.itemText}>{item.name}</Text>          
-                <Switch
-                  trackColor={{ false: "#767577", true: "white" }}
-                  thumbColor={selectedItems.has(item.id) ? "#007bff" : "#f4f3f4"}
-                  trackColor={{ false: "#767577", true: "white" }}
-                  thumbColor={selectedItems.has(item.id) ? "#007bff" : "#f4f3f4"}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={() => toggleSelectItem(item.id)}
-                  value={selectedItems.has(item.id)}
-                />
-              </View>
+                <View key={item.id} style={styles.item}>
+                  <Text style={styles.itemText}>{item.name}</Text>
+                  <Switch
+                      trackColor={{ false: "#767577", true: "white" }}
+                      thumbColor={selectedItems.has(item.id) ? "#007bff" : "#f4f3f4"}
+                      ios_backgroundColor="#3e3e3e"
+                      onValueChange={() => toggleSelectItem(item.id)}
+                      value={selectedItems.has(item.id)}
+                  />
+                </View>
             ))}
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
@@ -167,7 +148,6 @@ const MealPlanning = () => {
       </KeyboardAvoidingView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -318,5 +298,4 @@ const styles = StyleSheet.create({
   },
 
 });
-
 export default MealPlanning;

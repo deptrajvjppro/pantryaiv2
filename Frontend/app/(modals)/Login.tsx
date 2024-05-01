@@ -8,36 +8,28 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-
-
 import { defaultStyle } from "@/constants/Styles";
-
-
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "expo-router";
-
+import { useServerUrl } from "../context/ServerUrlContext"; // Make sure the path is correct
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login , user } = useAuth();
+  const { login, user } = useAuth();
   const router = useRouter();
-  const serverUrl = 'http://127.0.0.1:5000'
-
+  const serverUrl = useServerUrl(); // Using the server URL from the context
 
   const handleLogin = async () => {
     try {
       await login(email, password);
-      if(user){
+      if (user) {
         router.navigate('/(tabs)/Index');
       }
-     
     } catch (error) {
-      // If error is an instance of Error, it will have a message. Otherwise, it's an unknown error.
       Alert.alert("Login Error", error instanceof Error ? error.message : "An unknown error occurred");
     }
   };
-
 
   const handleSignup = async () => {
     try {
@@ -49,64 +41,54 @@ const Login = () => {
         body: JSON.stringify({ email, password }),
       });
 
-
       const result = await response.json();
       if (response.ok) {
         console.log("Signup successful, new user ID:", result.id);
-        // Optionally, log in the user automatically after sign up
         await login(email, password);
-       
       } else {
         Alert.alert("Signup failed", result.error || "Could not create user");
       }
     } catch (error) {
-      // If error is an instance of Error, it will have a message. Otherwise, it's an unknown error.
       Alert.alert("Signup Error", error instanceof Error ? error.message : "An unknown error occurred");
     }
   };
 
-
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("@/assets/images/logo.png")}
-        style={styles.logoStyle}
-      />
+      <View style={styles.container}>
+        <Image
+            source={require("@/assets/images/logo.png")}
+            style={styles.logoStyle}
+        />
 
+        <Text style={styles.inputLabel}>Enter Email Address</Text>
+        <TextInput
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            placeholderTextColor="black"
+            style={[styles.inputBox, { marginTop: 20 }]}
+        />
 
-      <Text style={styles.inputLabel}>Enter Email Address</Text>
-      <TextInput
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        placeholderTextColor="black"
-        style={[styles.inputBox, { marginTop: 20 }]}
-      />
+        <Text style={styles.inputLabel}>Enter Password</Text>
+        <TextInput
+            value={password}
+            onChangeText={setPassword}
+            autoCapitalize="none"
+            placeholderTextColor="black"
+            secureTextEntry
+            style={[styles.inputBox, { marginTop: 20 }]}
+        />
 
+        <TouchableOpacity style={defaultStyle.loginButton} onPress={handleLogin}>
+          <Text style={styles.textBox}>Log in</Text>
+        </TouchableOpacity>
 
-      <Text style={styles.inputLabel}>Enter Password</Text>
-      <TextInput
-        value={password}
-        onChangeText={setPassword}
-        autoCapitalize="none"
-        placeholderTextColor="black"
-        secureTextEntry
-        style={[styles.inputBox, { marginTop: 20 }]}
-      />
-
-
-      <TouchableOpacity style={defaultStyle.loginButton} onPress={handleLogin }>
-        <Text style={styles.textBox}>Log in</Text>
-      </TouchableOpacity>
-
-
-      <TouchableOpacity style={defaultStyle.loginButton} onPress={handleSignup}>
-        <Text style={styles.textBox}>Sign up</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={defaultStyle.loginButton} onPress={handleSignup}>
+          <Text style={styles.textBox}>Sign up</Text>
+        </TouchableOpacity>
+      </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -114,7 +96,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     flexDirection: 'column',
   },
-  inputBox:{
+  inputBox: {
     borderWidth: 0.7,
     height: 35,
     width: 350,
@@ -128,22 +110,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "mon-b"
   },
-  textStyle: {
-    fontFamily: "mon-sb",
-    left: 70,
-    fontSize: 20,
-  },
-  btnIcon: {
-    position: "absolute",
-    padding: 10,
-    left: 15,
-  },
   logoStyle: {
     alignSelf: "center",
     justifyContent: "center",
     width: 350,
     height: 100,
-    marginTop:50
+    marginTop: 50
   },
   textBox: {
     fontFamily: "mon-sb",
@@ -151,11 +123,6 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
   },
- 
 });
 
-
 export default Login;
-
-
-

@@ -1,3 +1,4 @@
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,40 +10,32 @@ import {
   FlatList,
   Modal,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import Header from "@/components/header";
 import SearchBar from "@/components/searchbar";
 import Colors from "@/constants/Colors";
-
-
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
-
+import { useServerUrl } from "../context/ServerUrlContext";  // Make sure the path is correct
 
 interface Item {
   id: number;
   name: string;
   quantity: number;
   expiry_date?: string;
-  // ... any other properties of the item
 }
-const index = () => {
-  // CONSTANTS //
- 
+
+const Index = () => {
   const [newItemName, setNewItemName] = useState("");
   const [newItemExpiryDate, setNewItemExpiryDate] = useState("");
   const [newItemQuantity, setNewItemQuantity] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
-  const {user} = useAuth();
-  const serverUrl = 'http://127.0.0.1:5000'
+  const { user } = useAuth();
+  const serverUrl = useServerUrl();  // Using the server URL from the context
 
-
-  // HANDLE SEARCH //
   const handleSearch = useCallback(async (term: string) => {
-
-    const url = serverUrl + `/backend/search_pantry_item_by_name?name=${encodeURIComponent(term)}`;
+    const url = `${serverUrl}/backend/search_pantry_item_by_name?name=${encodeURIComponent(term)}`;
     if (!term) {
       fetchItems();
       return;
@@ -50,15 +43,11 @@ const index = () => {
     try {
       const response = await fetch(url, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
-
-
       const result = await response.json();
       if (response.ok && result.length) {
-        setItems(result); // Update the items with the search result
+        setItems(result);
       } else {
         setItems([]);
       }
@@ -66,125 +55,93 @@ const index = () => {
       console.error('Error fetching data:', error);
       setItems([]);
     }
-  }, [user]);
+  }, [user, serverUrl]);
 
-
-  // FETCH ITEMS FROM THE DATA BASE
   const fetchItems = async () => {
-    // If there's no user or user id is not provided
-    //IMPORTANT NOTE: We need to have a corner case everytime!!!!!!!!
     if (!user || user.id === undefined) {
       Alert.alert("Fetch error: No user or user id");
-      return; // Exit the function if user_id is not set
+      return;
     }
-
-
-    // Construct the URL with the correct user_id
-    const url = serverUrl + `/backend/get_pantry_items_by_user?user_id=${user.id}`;
+    const url = `${serverUrl}/backend/get_pantry_items_by_user?user_id=${user.id}`;
     try {
       const response = await fetch(url, {
-        method: "GET", // Assuming GET is the correct method for your endpoint
-        headers: {
-          "Content-Type": "application/json",
-        },
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       });
       const items = await response.json();
-      console.log("Current user_id object:", user.id);
-      console.log("Using user_id for fetch:", user.id ? user.id : "Not Set");
       if (items && response.ok) {
         setItems(items);
       } else {
         throw new Error(items.message || "Error fetching items");
       }
-    } catch (error: any) {
+    } catch (error) {
       Alert.alert("Error", error.message || "Failed to fetch items");
     }
   };
 
-
-  // DELTE THE ITEMS FROM THE DATA BASE
   const deleteItem = async (itemId: number) => {
     if (!user || user.id === undefined) {
       console.error("User ID is undefined or not properly set.");
-      return; // Exit the function if user_id is not set
+      return;
     }
+    const url = `${serverUrl}/backend/delete_pantry_item?item_id=${itemId}&user_id=${user.id}`;
     try {
-      const response = await fetch(
-          serverUrl + `/backend/delete_pantry_item?item_id=${itemId}&user_id=${user.id}`, // Make sure the URL and parameters match your backend API requirements
-        {
-          method: "DELETE", // Use the DELETE HTTP method
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
       if (response.ok) {
-        // Option 1: Refetch the items list to update the UI
-        console.log("Deleted item with ID", itemId);
-        console.log("Delted item with ID", itemId, "from user", user.id);
         fetchItems();
       } else {
         throw new Error("Failed to delete the item");
       }
-    } catch (error: any) {
+    } catch (error) {
       Alert.alert("Error", error.message);
     }
   };
 
-
-  // ADD ITEMS TO THE DATA BASE
   const addItem = async () => {
     if (!user || user.id === undefined) {
       Alert.alert("Error", "User not logged in or user data not available.");
       return;
     }
- 
+    const url = `${serverUrl}/backend/add_pantry_item`;
     try {
-      const response = await fetch(
-          serverUrl + "/backend/add_pantry_item",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: newItemName,
-            expiry_date: newItemExpiryDate,
-            quantity: parseInt(newItemQuantity, 10),
-            user_id: user.id,
-          }),
-        }
-      );
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newItemName,
+          expiry_date: newItemExpiryDate,
+          quantity: parseInt(newItemQuantity, 10),
+          user_id: user.id,
+        }),
+      });
       if (response.ok) {
         setModalVisible(false);
-        fetchItems(); // Refresh the list after adding an item
-        console.log("Added item to User :", user.id);
+        fetchItems();
       } else {
         throw new Error("Error adding item");
       }
-    } catch (error: any) {
+    } catch (error) {
       Alert.alert("Error", error.message);
     }
   };
 
-
-  // DYNAMICALLY UPDATE THE USER ID BASED ON THE USER LOG IN
   useEffect(() => {
     if (user && user.id !== undefined) {
       fetchItems();
-    }
-    else {
+    } else {
       console.log("Waiting for user data before fetching items.");
     }
-  }, [user]); // Depend on user_id.user_id to re-trigger the effect when it changes
-
+  }, [user]);
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
 
 
-  return (
+return (
     <View style={styles.container}>
       <Stack.Screen
         options={{
@@ -420,10 +377,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-export default index;
-
-
-
-
-
+export default Index;
