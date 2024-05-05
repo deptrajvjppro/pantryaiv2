@@ -19,7 +19,7 @@ For Frontend Installation:
 3. cd Frontend
 4. npm install -g expo-cli
 5. npm install
-7. npm start or expo start
+7. npm start OR npm expo start
 
 For Backend Installation: 
 ```bash
