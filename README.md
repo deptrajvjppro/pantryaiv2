@@ -2,6 +2,9 @@
 
 PantryAI is a comprehensive mobile application designed to help users manage their pantry items, plan meals, and minimize food waste by suggesting recipes based on available ingredients. Built with React Native, the app runs on both iOS and Android platforms, providing a seamless user experience.
 
+# Youtube Video Demo
+https://www.youtube.com/watch?v=GDMsRPdhr2g
+
 # Features
 
 - **Pantry Management**: Track and manage pantry items, including quantities and expiration dates.
@@ -52,5 +55,4 @@ Finally, start your backend:
 python run.py
 ```
 
-# Youtube Video Demo
-https://www.youtube.com/watch?v=GDMsRPdhr2g
+
