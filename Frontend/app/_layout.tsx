@@ -7,115 +7,119 @@ import { useEffect } from "react";
 import { TouchableOpacity } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
-
 import React from "react";
 
-
 import { AuthProvider, useAuth } from './context/AuthContext';
-
-
-//                 {/*INITIAL_LAYOUT */}                  //
-
+import { TabProvider } from './context/TabContext';
 
 export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
+    // Catch any errors thrown by the Layout component.
+    ErrorBoundary,
 } from "expo-router";
 
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
 
+
+export const unstable_settings = {
+    // Ensure that reloading on `/modal` keeps a back button present.
+    initialRouteName: "(tabs)",
+};
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    mon: require("../assets/fonts/Regular.ttf"),
-    "mon-sb": require("../assets/fonts/SemiBold.ttf"),
-    "mon-b": require("../assets/fonts/Bold.ttf"),
-  });
+    const [loaded, error] = useFonts({
+        mon: require("../assets/fonts/Regular.ttf"),
+        "mon-sb": require("../assets/fonts/SemiBold.ttf"),
+        "mon-b": require("../assets/fonts/Bold.ttf"),
+    });
 
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
 
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+    useEffect(() => {
+        if (error) throw error;
+    }, [error]);
+
+
+
+
+    useEffect(() => {
+        if (loaded) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded]);
+
+
+
+
+    if (!loaded) {
+        return null;
     }
-  }, [loaded]);
 
 
-  if (!loaded) {
-    return null;
-  }
 
 
-  return (
-    <AuthProvider>
-        <RootLayoutNav />  
-    </AuthProvider>
-  );
+    return (
+        <AuthProvider>
+            <TabProvider>
+                <RootLayoutNav/>
+            </TabProvider>
+        </AuthProvider>
+    );
 }
+
+
 
 
 function RootLayoutNav() {
-  //  Evoke the router
-  const router = useRouter();
- 
+    //  Evoke the router
+    const router = useRouter();
 
 
- 
-  const { user, isLoaded } = useAuth();
-  useEffect(() => {
-    //Clerk is ready but the user is not yet authenticated
-    if (isLoaded && !user) {
-      //push the login page
-      router.push("/Login");
-    }
-  }, [isLoaded]);
+    const { user, isLoaded } = useAuth();
+    useEffect(() => {
+        //Clerk is ready but the user is not yet authenticated
+        if (isLoaded && !user) {
+            //push the login page
+            router.navigate("/(modals)/Login");
+        }
+    }, [isLoaded]);
 
 
-  return (
-    <Stack>
-      <Stack.Screen
-        name="(tabs)"
-        options={{
-          headerShown: false,
-        }}
-      />
 
 
-      <Stack.Screen
-        name="(modals)/Login"
-        options={{
-          title: "Log in or Sign up",
-          presentation: "modal",
-          //Header left of the modal window has
-          headerLeft: () => (
-            //a back icon button.
-            <TouchableOpacity onPress={() => router.back()}>
-              <Ionicons name="close-outline" size={30} color={Colors.dark} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-    </Stack>
-  );
+    return (
+        <Stack>
+            <Stack.Screen
+                name="(tabs)"
+                options={{
+                    headerShown: false,
+                }}
+            />
+
+
+
+
+            <Stack.Screen
+                name="(modals)/Login"
+                options={{
+                    title: "Log in or Sign up",
+                    presentation: "modal",
+                    //Header left of the modal window has
+                    headerLeft: () => (
+                        //a back icon button.
+                        <TouchableOpacity onPress={() => router.back()}>
+                            <Ionicons name="close-outline" size={30} color={Colors.dark} />
+                        </TouchableOpacity>
+                    ),
+                }}
+            />
+        </Stack>
+    );
 }
 function createStackNavigator() {
-  throw new Error("Function not implemented.");
+    throw new Error("Function not implemented.");
 }
-
-
-
-
-
