@@ -50,3 +50,6 @@ source {your venv name}/bin/activate
 Finally, start your backend:
 ```bash
 python run.py
+
+# Youtube Video Demo
+https://www.youtube.com/watch?v=GDMsRPdhr2g
