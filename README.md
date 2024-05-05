@@ -9,7 +9,7 @@ PantryAI is a comprehensive mobile application designed to help users manage the
 - **Recipe Suggestions**: Get recipe recommendations based on the current ingredients in your pantry from an AI model.
 
 ## Installation
-
+Make sure to have Node.js and python installed.
 To get started with PantryAI, clone this repository and install the required dependencies.
 
 For Frontend Installation:
