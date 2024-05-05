@@ -1,21 +1,18 @@
-import { View } from 'react-native';
 import React from 'react';
+import { View } from 'react-native';
 import { Tabs } from 'expo-router';
+import { useTab } from '../context/TabContext';
 import Colors from '@/constants/Colors';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { MaterialIcons, Entypo } from '@expo/vector-icons';
-import { useServerUrl } from '../context/ServerUrlContext';  // Adjust the path as necessary
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Layout = () => {
-    const serverUrl = useServerUrl();  // Using the server URL context
-
-    // You can now use serverUrl in your component or pass it to children
-    console.log("Server URL in Layout:", serverUrl); // For demonstration, you can remove it or use it as needed
+    const { setActiveTab } = useTab(); // This will get the setActiveTab method from the context
 
     return (
         <View style={{ flex: 1 }}>
             <Tabs screenOptions={{
-                tabBarActiveTintColor: "white",
+                tabBarActiveTintColor: Colors.primary,
                 tabBarInactiveTintColor: Colors.lessgrey,
                 tabBarLabelStyle: {
                     fontFamily: 'mon-b',
@@ -27,7 +24,10 @@ const Layout = () => {
                 },
             }}>
                 <Tabs.Screen
-                    name='Index'
+                    name='index'
+                    listeners={{
+                        tabPress: () => setActiveTab('index'),
+                    }}
                     options={{
                         tabBarLabel: 'Pantry',
                         tabBarIcon: ({ color, size }) => <MaterialIcons name="home" size={30} color={color} />
@@ -35,6 +35,9 @@ const Layout = () => {
                 />
                 <Tabs.Screen
                     name='MealPlanning'
+                    listeners={{
+                        tabPress: () => setActiveTab('MealPlanning'),
+                    }}
                     options={{
                         tabBarLabel: 'Meal Planning',
                         tabBarIcon: ({ color, size }) => <MaterialIcons name="set-meal" size={20} color={color} />
@@ -42,6 +45,9 @@ const Layout = () => {
                 />
                 <Tabs.Screen
                     name='ShoppingNote'
+                    listeners={{
+                        tabPress: () => setActiveTab('ShoppingNote'),
+                    }}
                     options={{
                         tabBarLabel: 'Shopping Note',
                         tabBarIcon: ({ color, size }) => <Entypo name="open-book" size={20} color={color}/>
@@ -49,6 +55,9 @@ const Layout = () => {
                 />
                 <Tabs.Screen
                     name='Account'
+                    listeners={{
+                        tabPress: () => setActiveTab('Account'),
+                    }}
                     options={{
                         tabBarLabel: 'Account',
                         tabBarIcon: ({ color, size }) => <Ionicons name='person' size={20} color={color}/>

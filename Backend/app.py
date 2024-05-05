@@ -5,7 +5,7 @@ import openai
 import os
 from dotenv import load_dotenv
 # Import db instance and models from models.py
-from models import db, User, PantryItem, Recipe, Favorite  # Import other models as needed
+from models import db, User, PantryItem, ShoppingNote
 from routes import backend
 
 load_dotenv()
@@ -16,7 +16,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.secret_key = os.environ["APP_SECRET_KEY"]
     openai.api_key = os.environ["OPENAI_API_KEY"]
-    serphouse_api_key = os.environ.get("SERPHOUSE_API_KEY")  # Access the SerpHouse API key from environment variables
+    serphouse_api_key = os.environ.get("SERPHOUSE_API_KEY")
 
     app.register_blueprint(backend)
     db.init_app(app)

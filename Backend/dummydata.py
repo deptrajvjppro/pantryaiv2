@@ -1,5 +1,5 @@
 from app import create_app, db
-from models import User, PantryItem, Recipe, Favorite
+from models import User, PantryItem, ShoppingNote
 from datetime import datetime
 
 def create_tables():
@@ -30,11 +30,6 @@ def populate_dummy_data():
         item2 = PantryItem(name='Tomato Sauce', expiry_date=datetime(2020, 11, 17), quantity=3, user_id=user2.id)
         db.session.add(item1)
         db.session.add(item2)
-
-        recipe1 = Recipe(name='Spaghetti', instructions='Boil pasta and add sauce', user_id=user1.id)
-        recipe2 = Recipe(name='Tomato Soup', instructions='Blend tomatoes and heat', user_id=user2.id)
-        db.session.add(recipe1)
-        db.session.add(recipe2)
 
         db.session.commit()
 

@@ -10,7 +10,6 @@ class User(db.Model):
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     pantry_items = db.relationship('PantryItem', backref='user', lazy=True)
-    favorites = db.relationship('Favorite', backref='user', lazy=True)
 
 
 class PantryItem(db.Model):
@@ -22,20 +21,6 @@ class PantryItem(db.Model):
     website_url = db.Column(db.String(255))  # URL field to store the website link
 
 
-class Recipe(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(120), nullable=False)
-    instructions = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-
-class Favorite(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    recipe_id = db.Column(db.Integer, db.ForeignKey('recipe.id'), nullable=False)
-    # Additional fields and relationships as necessary
-
-
 class ShoppingNote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(255), nullable=False)
@@ -43,5 +28,6 @@ class ShoppingNote(db.Model):
 
     def __grepr__(self):
         return f'<ShoppingNote {self.content}>'
+
 
 # Add additional classes for other tables like OpenFoodFactsCache etc. here.

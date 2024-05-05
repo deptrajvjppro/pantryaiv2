@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
-import { Stack } from "expo-router";
-import Header from "@/components/header";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Alert, Platform } from 'react-native';
 import { useAuth } from "../context/AuthContext";
-import { useServerUrl } from "../context/ServerUrlContext"; // Import the useServerUrl hook
+import { useServerUrl } from "../context/ServerUrlContext";
+import Header from "@/components/header";
+import { Stack } from "expo-router";
+import Colors from "@/constants/Colors";
+import { FontAwesome } from "@expo/vector-icons";
+
+interface Note {
+  id: number;
+  content?: string;
+}
 
 const ShoppingNote = () => {
-  const [notes, setNotes] = useState([]);
+  const [notes, setNotes] = useState<Note[]>([]);
   const [input, setInput] = useState('');
   const { user } = useAuth();
-  const serverUrl = useServerUrl(); // Use the serverUrl from the context
+  const serverUrl = useServerUrl();
 
   useEffect(() => {
     fetchNotes();
@@ -17,7 +24,7 @@ const ShoppingNote = () => {
 
   const fetchNotes = async () => {
     if (!user || user.id === undefined) {
-      console.log("User ID is not set. Please log in.");
+      Alert.alert("Error", "User ID is not set. Please log in.");
       return;
     }
     try {
@@ -28,11 +35,10 @@ const ShoppingNote = () => {
       } else {
         throw new Error(data.error || 'Failed to fetch notes');
       }
-    } catch (error) {
+    } catch (error:any) {
       Alert.alert('Error', error.message);
     }
   };
-
   const addNote = async () => {
     if (input.trim() && user) {
       try {
@@ -48,13 +54,16 @@ const ShoppingNote = () => {
         } else {
           throw new Error(data.error || 'Failed to add note');
         }
-      } catch (error) {
+      } catch (error:any) {
         Alert.alert('Error', error.message);
       }
     } else {
       Alert.alert('Input Error', 'Please enter a note or check login status');
     }
   };
+
+
+
 
   const deleteNote = async (noteId: number) => {
     try {
@@ -67,95 +76,110 @@ const ShoppingNote = () => {
         const data = await response.json();
         throw new Error(data.error || 'Failed to delete note');
       }
-    } catch (error) {
+    } catch (error:any) {
       Alert.alert('Error', error.message);
     }
   };
 
   return (
-      <View style={styles.container}>
+      <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // Increased offset for iOS
+      >
         <Stack.Screen
             options={{
               header: () => <Header />,
             }}
         />
+        <ScrollView contentContainerStyle={styles.contentContainer}>
         <Text style={styles.header}>Shopping Notes</Text>
-        <ScrollView>
           {notes.map((note) => (
               <View key={note.id} style={styles.noteItem}>
-                <Text style={styles.noteText}>• {note.content}</Text>
+                <Text style={styles.noteText}> {note.content} </Text>
                 <TouchableOpacity onPress={() => deleteNote(note.id)} style={styles.deleteButton}>
-                  <Text style={styles.deleteButtonText}>Delete</Text>
+                  <FontAwesome name="trash-o" size={24} color="white" />
                 </TouchableOpacity>
               </View>
           ))}
         </ScrollView>
-        <TextInput
-            style={styles.input}
-            placeholder="Enter a note..."
-            placeholderTextColor="gray"
-            value={input}
-            onChangeText={setInput}
-            onSubmitEditing={addNote}
-        />
-        <TouchableOpacity onPress={addNote} style={styles.addButton}>
-          <Text style={styles.addButtonText}>Add Note</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+              style={styles.input}
+              placeholder="Add a note here..."
+              value={input}
+              onChangeText={setInput}
+          />
+          <TouchableOpacity onPress={addNote} style={styles.enterButton}>
+            <FontAwesome name="send" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
   );
 };
 
-// Define your styles here
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: 'black',
+    backgroundColor: Colors.background,
+  },
+  contentContainer: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     color: 'white',
+    fontFamily: "mon-b",
   },
   noteItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
-
+    backgroundColor: Colors.box,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   noteText: {
     fontSize: 16,
-    color: 'white',
+    color: Colors.white,
+    flex: 1,
+    flexWrap: 'wrap',
+    marginRight: 10,
+    fontFamily: "mon",
   },
   deleteButton: {
-    backgroundColor: '#F00',
+    backgroundColor: 'transparent',
     padding: 10,
     borderRadius: 5,
   },
-  deleteButtonText: {
-    color: '#FFF',
-    fontSize: 16,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 20,
   },
   input: {
+    flex: 1,
     borderWidth: 1,
     borderColor: '#CCC',
     padding: 10,
     fontSize: 16,
-    color: '#000',
-    marginBottom: 10,
-    backgroundColor: 'white',
+    color: Colors.dark,
+    backgroundColor: Colors.white,
+    borderRadius: 20,
+    marginRight: 10,
+    fontFamily: "mon",
   },
-  addButton: {
-    backgroundColor: '#007AFF',
+  enterButton: {
     padding: 10,
+    backgroundColor: Colors.primary,
     borderRadius: 5,
-    alignItems: 'center',
-  },
-  addButtonText: {
-    color: '#FFF',
-    fontSize: 16,
   },
 });
 

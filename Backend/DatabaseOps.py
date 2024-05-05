@@ -5,16 +5,11 @@ base_url = 'http://127.0.0.1:5000/backend'
 def search_user_by_email(email):
     return requests.get(f'{base_url}/search_user_by_email', params={'email': email})
 
-def search_recipe_by_name(name):
-    return requests.get(f'{base_url}/search_recipe_by_name', params={'name': name})
 
 def add_user(username, email, password):
     user_data = {'username': username, 'email': email, 'password': password}
     return requests.post(f'{base_url}/add_user', json=user_data)
 
-def add_recipe(name, instructions, user_id):
-    recipe_data = {'name': name, 'instructions': instructions, 'user_id': user_id}
-    return requests.post(f'{base_url}/add_recipe', json=recipe_data)
 
 def add_pantry_item(name, expiry_date, user_id, quantity):
     pantry_item_data = {'name': name, 'expiry_date': expiry_date, 'user_id': user_id, 'quantity': quantity }
