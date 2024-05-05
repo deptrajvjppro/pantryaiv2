@@ -74,7 +74,6 @@ const Index = () => {
     }
   };
 
-
   const incrementQuantity = async (itemId: number) => {
     const item = items.find((item) => item.id === itemId);
     if (!item) {
@@ -162,9 +161,10 @@ const Index = () => {
     const month = selectedDate.getMonth() + 1;
     const day = selectedDate.getDate();
     const dateString = `${year}-${month}-${day}`;
-    setDate(date);
+    setDate(selectedDate);
     setNewItemExpiryDate(dateString);
     console.log(dateString);
+   
   };
 
 
