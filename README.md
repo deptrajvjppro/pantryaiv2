@@ -17,8 +17,8 @@ For Frontend Installation:
 1. git clone https://github.com/yourusername/pantryai.git
 2. cd pantryaiv2
 3. cd Frontend
-4. npm install -g expo-cli
-5. npm install
+4. npm install
+5. npm install -g expo-cli
 7. npm start OR npm expo start
 
 For Backend Installation: 
