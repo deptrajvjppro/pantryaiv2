@@ -12,9 +12,19 @@ PantryAI is a comprehensive mobile application designed to help users manage the
 
 To get started with PantryAI, clone this repository and install the required dependencies.
 
+For Frontend Installation:
 ```bash
 1. git clone https://github.com/yourusername/pantryai.git
-2. cd pantryai
-3. npm install -g expo-cli
-4. npm install
-5. npm start or expo start
+2. cd pantryaiv2
+3. cd Frontend
+4. npm install -g expo-cli
+5. npm install
+7. npm start or expo start
+
+For Backend Installation: 
+```bash
+1. cd Backend
+2. pip install requirements.txt
+3. python databaseOps.py
+4. pip install openai=0.28
+5. python run.py
