@@ -19,12 +19,16 @@ For Frontend Installation:
 3. cd Frontend
 4. npm install
 5. npm install -g expo-cli
-7. npm start OR npm expo start
-
-For Backend Installation: 
+```
+To start the frontend:
+```bash
+npm start OR npx expo 
+```
+## For Backend Installation: 
 ```bash
 1. cd Backend
-2. pip install requirements.txt
-3. python databaseOps.py
-4. pip install openai=0.28
-5. python run.py
+2. pip install -r requirements.txt
+3. pip install python-dotenv
+4. python databaseOps.py (To create the database schemas)
+5. pip install --upgrade Flask Flask-SQLAlchemy
+```
