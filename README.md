@@ -47,6 +47,6 @@ For Mac:
 python3.9 -m venv {your venv name}
 source {your venv name}/bin/activate
 ```
-## Finally, start your backend:
+Finally, start your backend:
 ```bash
 python run.py
