@@ -22,6 +22,7 @@ To get started with PantryAI, clone this repository and install the required dep
 3. cd Frontend
 4. npm install
 5. npm install -g expo-cli
+6. npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar
 ```
 To start the frontend:
 ```bash
