@@ -29,3 +29,4 @@ urllib3==2.2.1
 Werkzeug==3.0.1
 Flask-SQLAlchemy==2.5.1
 watchdog==2.1.6
+openai==0.28

@@ -121,6 +121,7 @@ const Index = () => {
       );
     }
 
+
     const newQuantity = item.quantity - 1;
     console.log(item.name + "'s quantity is dremented by 1");
     updateQuantityOnServer(itemId, newQuantity);
@@ -132,6 +133,8 @@ const Index = () => {
       newItemQuantity: number
   ) => {
     // Implement API call to update the quantity on the server
+
+
     const url = `${serverUrl}/backend/update_pantry_item_quantity?item_id=${itemId}&quantity=${newItemQuantity}`;
     try {
       const response = await fetch(url, {
@@ -161,7 +164,7 @@ const Index = () => {
     setDate(selectedDate);
     setNewItemExpiryDate(dateString);
     console.log(dateString);
-
+   
   };
 
 
@@ -584,4 +587,10 @@ const styles = StyleSheet.create({
   },
 });
 
+
 export default Index;
+
+
+
+
+
