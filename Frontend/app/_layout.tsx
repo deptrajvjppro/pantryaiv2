@@ -5,8 +5,6 @@ import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { TouchableOpacity } from "react-native";
-import * as SecureStore from "expo-secure-store";
-
 import React from "react";
 
 import { AuthProvider, useAuth } from './context/AuthContext';

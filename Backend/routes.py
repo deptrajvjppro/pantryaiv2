@@ -120,8 +120,6 @@ def get_pantry_items_by_user():
     return jsonify(items_data), 200
 
 
-
-
 @backend.route('/loginUser', methods=['POST'])
 def login_user():
     data = request.get_json()

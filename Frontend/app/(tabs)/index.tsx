@@ -74,7 +74,6 @@ const Index = () => {
     }
   };
 
-
   const incrementQuantity = async (itemId: number) => {
     const item = items.find((item) => item.id === itemId);
     if (!item) {
@@ -122,7 +121,6 @@ const Index = () => {
       );
     }
 
-
     const newQuantity = item.quantity - 1;
     console.log(item.name + "'s quantity is dremented by 1");
     updateQuantityOnServer(itemId, newQuantity);
@@ -134,8 +132,6 @@ const Index = () => {
       newItemQuantity: number
   ) => {
     // Implement API call to update the quantity on the server
-
-
     const url = `${serverUrl}/backend/update_pantry_item_quantity?item_id=${itemId}&quantity=${newItemQuantity}`;
     try {
       const response = await fetch(url, {
@@ -162,9 +158,10 @@ const Index = () => {
     const month = selectedDate.getMonth() + 1;
     const day = selectedDate.getDate();
     const dateString = `${year}-${month}-${day}`;
-    setDate(date);
+    setDate(selectedDate);
     setNewItemExpiryDate(dateString);
     console.log(dateString);
+
   };
 
 
@@ -587,10 +584,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
 export default Index;
-
-
-
-
-
